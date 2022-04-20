@@ -19,3 +19,12 @@
 .quiz-cards {
     flex-direction: column;
 }
+
+.criacao-perguntas {
+    width: 100%;
+}
+
+h2 {
+    font-size: 20px;
+    margin: 38px 0 30px 0;
+}
