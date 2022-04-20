@@ -8,11 +8,6 @@ function usuarioTemQuiz () {
     return false;
 }
 
-function listarQuizes(div) {
-    // função incompleta
-    div.querySelector(".quiz-cards");
-}
-
 function mostrarTelaInicial() {
     conteudoMutavel.innerHTML = `
     <div class="quizes">
@@ -70,7 +65,7 @@ function mostrarTelaCriacaoPerguntas() {
         meio += `
         <div class="pergunta">
             <h3>Pergunta ${i + 1} <ion-icon name="create-outline" onclick="mostra(this)"></ion-icon></h3>
-            <div class="wrapper hidden">
+            <div class="wrapper none">
                 <input type="text" placeholder="Texto da pergunta" name="pergunta"/>
                 <input type="text" placeholder="Cor de fundo da pergunta" name="cor-da-pergunta"/>
                 <div class="sep"></div>
@@ -100,15 +95,15 @@ function mostra(icone) {
     if (mostrando !== undefined) {
         esconde(mostrando);
     }
-    icone.classList.add("hidden");
+    icone.classList.add("none");
     const pergunta = icone.parentNode.parentNode
-    pergunta.querySelector(".wrapper").classList.remove("hidden");
+    pergunta.querySelector(".wrapper").classList.remove("none");
     mostrando = pergunta;
 }
 
 function esconde(pergunta) {
-    pergunta.querySelector("h3 ion-icon").classList.remove("hidden");
-    pergunta.querySelector(".wrapper").classList.add("hidden");
+    pergunta.querySelector("h3 ion-icon").classList.remove("none");
+    pergunta.querySelector(".wrapper").classList.add("none");
 }
 
 function checkContent() {
@@ -134,9 +129,41 @@ function checkContent() {
     })
 }
 
+function listarQuizes() {
+    const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
+    promise.then(putQuizes);
+}
+
+function putQuizes(quiz) {
+    let quizDosOutros = document.querySelector(".quiz-cards");
+    quizDosOutros.innerHTML = ""
+    for (let i = 0; i < quiz.data.length; i++) {
+        const htmlQuizz = `
+        <div class="quiz-card" onclick="showQuiz()">
+            <p>
+            ${quiz.data[i].title}
+            </p>
+        </div>
+        `
+        console.log(quiz.data[i].image)
+        quizDosOutros.innerHTML += htmlQuizz
+    }
+    // put the background image
+    let Allquizes = document.querySelectorAll(".quiz-card")
+    for (let i = 0; i < Allquizes.length; i++) {
+        Allquizes[i].style.backgroundImage = `${backgroundGradient}, url("${quiz.data[i].image}")`
+    }
+}
+
+function showQuiz() {
+    document.querySelector(".quizes").classList.add("none")
+    // add the quizz information
+}
+
+
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
 // mock para numero de perguntas
 let numeroPerguntas = 5;
-
+const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)"
 mostrarTelaInicial();
