@@ -1,0 +1,21 @@
+.quizes {
+    width: 100%;
+    margin-left: 18px;
+    margin-right: 18px;
+}
+
+.quizes-do-usuario {
+    margin-top: 30px;
+}
+
+.todos-quizes {
+    margin-top: 35px;
+}
+
+.titulo {
+    justify-content: space-between;
+}
+
+.quiz-cards {
+    flex-direction: column;
+}
