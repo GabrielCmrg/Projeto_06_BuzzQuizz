@@ -231,3 +231,7 @@ h3 ion-icon {
     display: none;
     transition: 500ms ease;
 }
+
+.background-error {
+    background-color: #FFE9E9;
+}

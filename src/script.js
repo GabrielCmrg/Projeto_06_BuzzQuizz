@@ -176,42 +176,52 @@ function checkContentInformacoesBasicas(element) {
         console.log(element.name)
         if (caracteresIncorretos()) {
             document.querySelector(".quiz-title").classList.remove("none")
+            element.classList.add("background-error")
         } else {
             document.querySelector(".quiz-title").classList.add("none")
+            element.classList.remove("background-error")
         }
     }
     if (element.name === "url-imagem") {
         if (urlInvalida()) {
             document.querySelector(".quiz-url").classList.remove("none")
+            element.classList.add("background-error")
 
-        } else (
-            document.querySelector(".quiz-url").classList.add("none")
-        )
+        } else {
+            document.querySelector(".quiz-url").classList.add("none");
+            element.classList.remove("background-error")
+        }
     }
     if (element.name === "qtd-perguntas") {
         if (isNaN(element.value)) {
             document.querySelector(".quiz-qtdpergunta .numbererror").classList.add("none")
             document.querySelector(".quiz-qtdpergunta .texterror").classList.remove("none")
+            element.classList.add("background-error")
             document.querySelector(".quiz-qtdpergunta").classList.remove("none")
         } else if (qtdPerguntasInsuficientes()) {
             document.querySelector(".quiz-qtdpergunta .numbererror").classList.remove("none")
             document.querySelector(".quiz-qtdpergunta .texterror").classList.add("none")
+            element.classList.add("background-error")
             document.querySelector(".quiz-qtdpergunta").classList.remove("none")
         } else {
             document.querySelector(".quiz-qtdpergunta").classList.add("none")
+            element.classList.remove("background-error")
         }
     }
     if (element.name === "qtd-niveis") {
         if (isNaN(element.value)) {
             document.querySelector(".quiz-nivel .numbererror").classList.add("none")
             document.querySelector(".quiz-nivel .texterror").classList.remove("none")
+            element.classList.add("background-error")
             document.querySelector(".quiz-nivel").classList.remove("none")
         } else if (niveisInsuficientes()) {
             document.querySelector(".quiz-nivel .numbererror").classList.remove("none")
             document.querySelector(".quiz-nivel .texterror").classList.add("none")
             document.querySelector(".quiz-nivel").classList.remove("none")
+            element.classList.add("background-error")
         } else {
             document.querySelector(".quiz-nivel").classList.add("none")
+            element.classList.remove("background-error")
         }
     }
 }
