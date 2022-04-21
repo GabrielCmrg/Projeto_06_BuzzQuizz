@@ -305,7 +305,6 @@ function prosseguirParaNiveis() {
 }
 
 function checkContentInformacoesBasicas(element) {
-    const informacoes = document.querySelectorAll(".informacoes-basicas input")
     if (element.name === "titulo-quiz") {
         console.log(element.name)
         if (caracteresIncorretos()) {
@@ -317,7 +316,7 @@ function checkContentInformacoesBasicas(element) {
         }
     }
     if (element.name === "url-imagem") {
-        if (urlInvalida()) {
+        if (!isValidURL(element.value)) {
             document.querySelector(".quiz-url").classList.remove("none")
             element.classList.add("background-error")
 
@@ -363,15 +362,6 @@ function checkContentInformacoesBasicas(element) {
 function caracteresIncorretos() {
     const informacoes = document.querySelectorAll(".informacoes-basicas input")
     if (informacoes[0].value.length < 20 || informacoes[0].value.length > 65) {
-        return true;
-    }
-    return false;
-}
-
-function urlInvalida() {
-    const informacoes = document.querySelectorAll(".informacoes-basicas input")
-    const url = /^(https|http):\/\/.*\.(png|jpeg|jpg|svg)/g
-    if (!url.test(informacoes[1].value)) {
         return true;
     }
     return false;
