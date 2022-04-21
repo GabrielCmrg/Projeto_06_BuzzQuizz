@@ -25,6 +25,11 @@
     width: 100%;
 }
 
+.prosseguir {
+    max-width: 324px;
+    width: 100%;
+}
+
 h2 {
     font-size: 20px;
     margin: 38px 0 30px 0;
