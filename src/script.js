@@ -610,13 +610,43 @@ function comparador() {
 	return Math.random() - 0.5; 
 }
 
+function createQuizObject() {
+    const objectToSend = {
+        title: basicInfos.quizTitle,
+        image: basicInfos.quizImageSrc,
+        questions: []
+    }
+
+    for (let i = 0; i , questions.length; i++) {
+        objectToSend.questions.push({
+            title: questions.question,
+            color: questions.color,
+            answers: []
+        })
+    }
+
+    objectToSend.questions.answers.push({
+        text: questions.correctAnswer,
+        image: questions.correctAnswerImage,
+        isCorrectAnswer: true
+    })
+
+    for (let i = 0; i < questions.wrongAnswers.length; i++) {
+        objectToSend.questions.answers.push({
+            text: questions.wrongAnswers[i],
+            image: questions.wrongAnswersImages[i],
+            isCorrectAnswer: false
+        })
+    }
+
+    return objectToSend;
+}
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
-let basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 2};
+const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 2};
 const questions = [];
 const levels = [];
 let infoQuizzes = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
-// showLevelScreen();
