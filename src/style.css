@@ -159,17 +159,17 @@ h3 ion-icon {
     padding: 20px 15px;
 }
 
-.pergunta input[type=text],
-.informacoes-basicas input[type=text] {
+input[type=text] {
     margin-top: 14px;
     height: 46px;
     border: 1px solid #D1D1D1;
     border-radius: 5px;
     padding-left: 22px;
+    font-size: 19px;
+    line-height: 22px;
 }
 
-.pergunta input[type=text]::placeholder,
-.informacoes-basicas input[type=text] {
+input[type=text]::placeholder {
     color: #BABABA;
     opacity: 1;
     font-style: italic;
