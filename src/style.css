@@ -80,9 +80,6 @@ header h2 {
     font-weight: 700;
     display: flex;
     align-items: center;
-<<<<<<< HEAD
-    margin-bottom: 5px;
-=======
     padding-bottom: 15px;
     background-color: #FAFAFA;
     padding-top: 20px;
@@ -90,7 +87,6 @@ header h2 {
     top: 69px;
     z-index: 1;
 
->>>>>>> 092ceb71b9b60b4a18d00482e10cf720c167853c
 }
 
 .titulo ion-icon {
@@ -216,6 +212,12 @@ h3 ion-icon {
     border-radius: 5px;
     margin-top: 15px;
     position: relative;
+    cursor: pointer;
+    transition: 500ms;
+}
+
+.quiz-card:hover {
+    transform: translateY(-10px);
 }
 
 
