@@ -92,7 +92,7 @@ function mostrarTelaCriacaoQuiz() {
 
 function mostrarTelaCriacaoPerguntas() {
     const inicio = `
-    <div class="criacao-perguntas">
+    <div class="criacao">
         <h2>Crie suas perguntas</h2>`;
 
     let meio = ``;
@@ -106,8 +106,10 @@ function mostrarTelaCriacaoPerguntas() {
         <div class="pergunta">
             <h3>Pergunta ${i + 1} <ion-icon name="create-outline" onclick="mostra(this)"></ion-icon></h3>
             <div class="wrapper none">
-                <input type="text" onchange="checkForCharacters(this)" placeholder="Texto da pergunta" />
-                <h6 class="incorreto question-text none">Pergunta deve ter mais de 20 caracteres.</h6>
+                <div>
+                    <input type="text" onchange="checkForCharacters(this, 20)" placeholder="Texto da pergunta" />
+                    <h6 class="incorreto question-text none">Pergunta deve ter mais de 20 caracteres.</h6>
+                </div>
                 <input type="text" onchange="checkForHex(this)" placeholder="Cor de fundo da pergunta" />
                 <h6 class="incorreto question-color none">Cor de fundo deve ser uma cor em hexadecimal válida.</h6>
                 <div class="sep"></div>
@@ -161,6 +163,61 @@ function mostrarTelaCriacaoPerguntas() {
     mostra(document.querySelector(".pergunta ion-icon"));
 }
 
+function showLevelScreen() {
+    const inicio = `
+    <div class="criacao">
+        <h2>Crie suas perguntas</h2>`;
+
+    let meio = ``;
+
+    const fim = `
+        <input type="button" value="Finalizar Quizz" class="prosseguir" onclick="prosseguirParaSucesso()" />
+    </div>`;
+
+    for (let i = 0; i < basicInfos.numberOfLevels; i++) {
+        meio += `
+        <div class="nivel">
+            <h3>Nível ${i + 1} <ion-icon name="create-outline" onclick="mostra(this)"></ion-icon></h3>
+            <div class="wrapper none">
+                <div>
+                    <input type="text" onchange="checkForCharacters(this, 10)" placeholder="Título do nível" />
+                    <h6 class="incorreto none">Título deve ter mais de 10 caracteres.</h6>
+                </div>
+                <input type="text" onchange="checkPercentage(this)" placeholder="% de acerto mínima" class="percentage-input"/>
+                <h6 class="incorreto percentage none">Porcentagem deve ser um valor inteiro de 0 a 100.</h6>
+                <input type="text" onchange="checkValidURL(this)" placeholder="URL da imagem do nível" />
+                <h6 class="incorreto answer-url none">Deve ser um url válido.</h6>
+                <div>
+                    <textarea onchange="checkForCharacters(this, 30)" placeholder="Descrição do nível"></textarea>
+                    <h6 class="incorreto none">A descrição deve ter ao menos 30 caracteres.</h6>
+                </div>
+            </div>
+        </div>`;
+        levels.push({
+            title: "", 
+            percentage: "", 
+            imageSrc: "", 
+            description: "",
+        })
+    }
+
+    conteudoMutavel.innerHTML = inicio + meio + fim;
+
+    mostra(document.querySelector(".nivel ion-icon"));
+}
+
+function checkPercentage (input) {
+    const number = parseInt(input.value);
+    input.value = number;
+    if (number < 0 || number > 100 || isNaN(number)) {
+        input.parentNode.querySelector(".percentage").classList.remove("none");
+        input.classList.add("background-error");
+    } else {
+        input.parentNode.querySelector(".percentage").classList.add("none");
+        input.classList.remove("background-error");
+    }
+}
+
 function mostra(icone) {
     if (mostrando !== undefined) {
         esconde(mostrando);
@@ -176,12 +233,12 @@ function esconde(pergunta) {
     pergunta.querySelector(".wrapper").classList.add("none");
 }
 
-function checkForCharacters(input) {
-    if (input.value.length < 20) {
-        input.parentNode.querySelector(".question-text").classList.remove("none");
+function checkForCharacters(input, size) {
+    if (input.value.length < size) {
+        input.parentNode.querySelector(".incorreto").classList.remove("none");
         input.classList.add("background-error");
     } else {
-        input.parentNode.querySelector(".question-text").classList.add("none");
+        input.parentNode.querySelector(".incorreto").classList.add("none");
         input.classList.remove("background-error");
     }
 }
@@ -273,7 +330,7 @@ function prosseguirParaNiveis() {
     const allQuestions = document.querySelectorAll(".pergunta");
     for (let i = 0; i < allQuestions.length; i++) {
         const inputs = allQuestions[i].querySelectorAll("input[type='text']");
-        checkForCharacters(inputs[0]);
+        checkForCharacters(inputs[0], 20);
         questions[i].question = inputs[0].value;
         checkForHex(inputs[1]);
         questions[i].color = inputs[1].value;
@@ -300,7 +357,44 @@ function prosseguirParaNiveis() {
     if (haCampoIncorreto.length !== 0) {
         alert("Preencha corretamente os campos");
     } else {
-        mostrarTelaInicial();
+        showLevelScreen();
+    }
+}
+
+function prosseguirParaSucesso() {
+    const allLevels = document.querySelectorAll(".nivel");
+    for (let i = 0; i < allLevels.length; i++) {
+        const inputs = allLevels[i].querySelectorAll("input[type='text']");
+        const description = allLevels[i].querySelector("textarea");
+        checkForCharacters(inputs[0], 10);
+        levels[i].title = inputs[0].value;
+        checkPercentage(inputs[1]);
+        levels[i].percentage = inputs[1].value;
+        checkValidURL(inputs[2]);
+        levels[i].imageSrc = inputs[2].value;
+        checkForCharacters(description, 30);
+        levels[i].description = description;
+    }
+    const incorretos = document.querySelectorAll(".incorreto");
+    const haCampoIncorreto = []
+    for (let i = 0; i < incorretos.length; i++) {
+        if (!incorretos[i].classList.contains("none")) {
+            haCampoIncorreto.push("mais um");
+        }
+    }
+    const allPercentages = document.querySelectorAll(".percentage-input");
+    let noZero = true;
+    for (let i = 0; i < allPercentages.length; i++) {
+        if (Number(allPercentages[i].value) == 0){
+            noZero = false;
+        }
+    }
+    if (haCampoIncorreto.length !== 0) {
+        alert("Preencha corretamente os campos");
+    } else if (noZero) {
+        alert("Ao menos um dos níveis deve ter uma porcentagem mínima de 0.")
+    } else {
+        sucessoQuiz();
     }
 }
 
@@ -441,7 +535,9 @@ function reload() {
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
-let basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 0};
+let basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 2};
 const questions = [];
+const levels = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
-mostrarTelaInicial();
+//mostrarTelaInicial();
+showLevelScreen();
