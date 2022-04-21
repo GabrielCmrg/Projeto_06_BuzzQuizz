@@ -379,6 +379,7 @@ function prosseguirParaPerguntas() {
         basicInfos.quizImageSrc = inputs[1].value;
         basicInfos.numberOfQuestions = inputs[2].value;
         basicInfos.numberOfLevels = inputs[3].value;
+        console.log(basicInfos)
         mostrarTelaCriacaoPerguntas();
     }
 }
