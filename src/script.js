@@ -101,7 +101,7 @@ function mostrarTelaCriacaoPerguntas() {
         <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="checkAllInputs()" />
     </div>`;
 
-    for (let i = 0; i < numeroPerguntas; i++) {
+    for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
         meio += `
         <div class="pergunta">
             <h3>Pergunta ${i + 1} <ion-icon name="create-outline" onclick="mostra(this)"></ion-icon></h3>
@@ -315,9 +315,7 @@ function niveisInsuficientes() {
 function prosseguirParaPerguntas() {
     const incorretos = document.querySelectorAll(".incorreto")
     const inputs = document.querySelectorAll(".informacoes-basicas-form input")
-    console.log(inputs)
     let haCampoIncorreto = []
-    console.log(incorretos)
     for (let i = 0; i < incorretos.length; i++) {
         if (!incorretos[i].classList.contains("none") || inputs[i].value === "") {
             haCampoIncorreto.push("mais um");
@@ -326,6 +324,10 @@ function prosseguirParaPerguntas() {
     if (haCampoIncorreto.length !== 0) {
         alert("Preencha corretamente os campos")
     } else {
+        basicInfos.quizTitle = inputs[0].value;
+        basicInfos.quizImageSrc = inputs[1].value;
+        basicInfos.numberOfQuestions = inputs[2].value;
+        basicInfos.numberOfLevels = inputs[3].value;
         mostrarTelaCriacaoPerguntas();
     }
 }
@@ -367,7 +369,6 @@ function reload() {
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
-// mock para numero de perguntas
-let numeroPerguntas = 1;
+let basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 0, numberOfLevels: 0};
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
