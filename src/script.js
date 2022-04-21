@@ -98,7 +98,7 @@ function mostrarTelaCriacaoPerguntas() {
     let meio = ``;
 
     const fim = `
-        <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="checkAllInputs()" />
+        <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="prosseguirParaNiveis()" />
     </div>`;
 
     for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
@@ -146,6 +146,14 @@ function mostrarTelaCriacaoPerguntas() {
                 </div>
             </div>
         </div>`;
+        questions.push({
+            question: "", 
+            color: "", 
+            correctAnswer: "", 
+            correctAnswerImage: "", 
+            wrongAnswers: [], 
+            wrongAnswersImages: [],
+        })
     }
 
     conteudoMutavel.innerHTML = inicio + meio + fim;
@@ -261,16 +269,38 @@ function checkWrongURLs(input) {
     }
 }
 
-function checkAllInputs() {
-    const questionsList = document.querySelectorAll(".pergunta");
-    for (let i = 0; i < questionsList.length; i++) {
-        const inputList = document.querySelectorAll("input[type='text']");
-        checkForCharacters(inputList[0]);
-        checkForHex(inputList[1]);
-        checkForEmpty(inputList[2]);
-        checkValidURL(inputList[3]);
-        checkWrongAnswers(inputList[4]);
-        checkWrongURLs(inputList[5]);
+function prosseguirParaNiveis() {
+    const allQuestions = document.querySelectorAll(".pergunta");
+    for (let i = 0; i < allQuestions.length; i++) {
+        const inputs = allQuestions[i].querySelectorAll("input[type='text']");
+        checkForCharacters(inputs[0]);
+        questions[i].question = inputs[0].value;
+        checkForHex(inputs[1]);
+        questions[i].color = inputs[1].value;
+        checkForEmpty(inputs[2]);
+        questions[i].correctAnswer = inputs[2].value;
+        checkValidURL(inputs[3]);
+        questions[i].correctAnswerImage = inputs[3].value;
+        for (let j = 0; j < 3; j++) {
+            checkWrongAnswers(inputs[4 + 2 * j]);
+            questions[i].wrongAnswers.push(inputs[4 + 2 * j].value);
+            checkWrongURLs(inputs[5 + 2 * j]);
+            questions[i].wrongAnswersImages.push(inputs[5 + 2 * j].value);
+        }
+        questions[i].wrongAnswers = questions[i].wrongAnswers.filter(answer => answer !== "");
+        questions[i].wrongAnswersImages = questions[i].wrongAnswersImages.filter(answer => answer !== "");
+    }
+    const incorretos = document.querySelectorAll(".incorreto");
+    const haCampoIncorreto = []
+    for (let i = 0; i < incorretos.length; i++) {
+        if (!incorretos[i].classList.contains("none")) {
+            haCampoIncorreto.push("mais um");
+        }
+    }
+    if (haCampoIncorreto.length !== 0) {
+        alert("Preencha corretamente os campos");
+    } else {
+        mostrarTelaInicial();
     }
 }
 
@@ -422,5 +452,6 @@ function reload() {
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
 let basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 0};
+const questions = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
