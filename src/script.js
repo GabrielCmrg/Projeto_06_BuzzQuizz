@@ -1,6 +1,6 @@
 function usuarioTemQuiz() {
     // Essa função está incompleta, precisamos poder criar quizz para completá-la
-    const temQuiz = true;
+    const temQuiz = false;
     if (temQuiz) {
         return true;
     }
@@ -98,7 +98,7 @@ function mostrarTelaCriacaoPerguntas() {
     let meio = ``;
 
     const fim = `
-        <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" />
+        <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="checkAllInputs()" />
     </div>`;
 
     for (let i = 0; i < numeroPerguntas; i++) {
@@ -114,14 +114,14 @@ function mostrarTelaCriacaoPerguntas() {
                 <input type="text" onchange="checkContent(this)" placeholder="URL da imagem" name="url-resposta"/>
                 <div class="sep"></div>
                 <h3>Respostas incorretas</h3>
-                <input type="text" onchange="checkContent(this)" placeholder="Resposta incorreta 1" name="resposta-errada"/>
-                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem 1" name="url-resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" class="wrong" placeholder="Resposta incorreta 1" name="resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" class="wrong-url" placeholder="URL da imagem 1" name="url-resposta-errada"/>
                 <div class="sep"></div>
-                <input type="text" onchange="checkContent(this)" placeholder="Resposta incorreta 2" name="resposta-errada"/>
-                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem 2" name="url-resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" class="wrong" placeholder="Resposta incorreta 2" name="resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" class="wrong-url" placeholder="URL da imagem 2" name="url-resposta-errada"/>
                 <div class="sep"></div>
-                <input type="text" onchange="checkContent(this)" placeholder="Resposta incorreta 3" name="resposta-errada"/>
-                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem 3" name="url-resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" class="wrong" placeholder="Resposta incorreta 3" name="resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" class="wrong-url" placeholder="URL da imagem 3" name="url-resposta-errada"/>
             </div>
         </div>`;
     }
@@ -148,6 +148,8 @@ function esconde(pergunta) {
 
 function checkContent(input) {
     const url = /^(https|http):\/\/.*\.(png|jpeg|jpg|svg)/g;
+    let allWrongAnswers;
+    let allWrongURLs;
     switch (input.name) {
         case "pergunta":
             if (input.value.length < 20) {
@@ -170,9 +172,41 @@ function checkContent(input) {
                 alert("Deve ser um url válido");
             }
             break;
+        case "resposta-errada":
+            allWrongAnswers = input.parentNode.querySelectorAll(".wrong");
+            for (let i = 0; i < allWrongAnswers.length; i++) {
+                if (allWrongAnswers[i].value !== "") {
+                    return;
+                }
+            }
+            alert("Deve existir ao menos uma resposta errada.");
+            break;
+        case "url-resposta-errada":
+            allWrongAnswers = input.parentNode.querySelectorAll(".wrong");
+            allWrongURLs = input.parentNode.querySelectorAll(".wrong-url");
+            for (let i = 0; i < allWrongURLs.length; i++) {
+                if (allWrongAnswers[i].value !== "") {
+                    if (allWrongURLs[i].value === "" || !url.test(allWrongURLs[i].value)) {
+                        alert("Deve existir uma imagem para cada resposta.")
+                        break;
+                    }
+                } else {
+                    if (allWrongURLs[i].value !== "") {
+                        alert("Imagem sem resposta associada.");
+                        break;
+                    }
+                }
+            }
+            break;
     }
 }
 
+function checkAllInputs() {
+    const listOfInputs = document.querySelectorAll("input[type='text']");
+    for (let i = 0; i < listOfInputs.length; i++) {
+        checkContent(listOfInputs[i]);
+    }
+}
 
 function checkContentInformacoesBasicas(element) {
     const informacoes = document.querySelectorAll(".informacoes-basicas input")
@@ -319,6 +353,6 @@ function reload() {
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
 // mock para numero de perguntas
-let numeroPerguntas = 5;
+let numeroPerguntas = 1;
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
