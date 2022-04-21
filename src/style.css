@@ -5,6 +5,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #FAFAFA;
+    padding-bottom: 50px;
 }
 
 header {
@@ -105,7 +106,7 @@ header h2 {
     flex-wrap: wrap;
 }
 
-.criacao-perguntas {
+.criacao {
     width: 600px;
     display: flex;
     flex-direction: column;
@@ -118,7 +119,7 @@ h2 {
     margin: 64px 0 36px 0;
 }
 
-.pergunta {
+.pergunta, .nivel {
     width: 100%;
     background-color: #FFFFFF;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
@@ -185,6 +186,20 @@ input[type=text] {
     padding-left: 22px;
     font-size: 19px;
     line-height: 22px;
+    width: 100%;
+}
+
+textarea {
+    margin-top: 14px;
+    height: 177px;
+    border: 1px solid #D1D1D1;
+    border-radius: 5px;
+    padding-left: 22px;
+    padding-top: 10px;
+    font-size: 19px;
+    line-height: 22px;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
 }
 
 input[type=text]::placeholder {
@@ -193,9 +208,20 @@ input[type=text]::placeholder {
     font-style: italic;
     font-size: 19px;
     line-height: 22px;
+    font-weight: 400;
 }
 
-.incorreto h6 {
+textarea::placeholder {
+    color: #BABABA;
+    opacity: 1;
+    font-style: italic;
+    font-size: 19px;
+    line-height: 22px;
+    font-weight: 400;
+    font-family: 'Roboto', sans-serif;
+}
+
+h6 {
     margin-top: 5px;
     font-weight: 400;
     font-size: 16px;
