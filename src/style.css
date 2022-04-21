@@ -167,6 +167,7 @@ input[type=text] {
     padding-left: 22px;
     font-size: 19px;
     line-height: 22px;
+    width: 100%;
 }
 
 input[type=text]::placeholder {
@@ -177,7 +178,7 @@ input[type=text]::placeholder {
     line-height: 22px;
 }
 
-.incorreto h6 {
+h6 {
     margin-top: 5px;
     font-weight: 400;
     font-size: 16px;
