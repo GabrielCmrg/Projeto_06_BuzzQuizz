@@ -106,22 +106,22 @@ function mostrarTelaCriacaoPerguntas() {
         <div class="pergunta">
             <h3>Pergunta ${i + 1} <ion-icon name="create-outline" onclick="mostra(this)"></ion-icon></h3>
             <div class="wrapper none">
-                <input type="text" onchange="checkContent(this)" placeholder="Texto da pergunta" name="pergunta"/>
-                <input type="text" onchange="checkContent(this)" placeholder="Cor de fundo da pergunta" name="cor-da-pergunta"/>
+                <input type="text" onchange="checkForCharacters(this)" placeholder="Texto da pergunta" />
+                <input type="text" onchange="checkForHex(this)" placeholder="Cor de fundo da pergunta" />
                 <div class="sep"></div>
                 <h3>Resposta correta</h3>
-                <input type="text" onchange="checkContent(this)" placeholder="Resposta correta" name="resposta"/>
-                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem" name="url-resposta"/>
+                <input type="text" onchange="checkForEmpty(this)" placeholder="Resposta correta" />
+                <input type="text" onchange="checkValidURL(this)" placeholder="URL da imagem" />
                 <div class="sep"></div>
                 <h3>Respostas incorretas</h3>
-                <input type="text" onchange="checkContent(this)" class="wrong" placeholder="Resposta incorreta 1" name="resposta-errada"/>
-                <input type="text" onchange="checkContent(this)" class="wrong-url" placeholder="URL da imagem 1" name="url-resposta-errada"/>
+                <input type="text" onchange="checkWrongAnswers(this)" class="wrong" placeholder="Resposta incorreta 1" />
+                <input type="text" onchange="checkWrongURLs(this)" class="wrong-url" placeholder="URL da imagem 1" />
                 <div class="sep"></div>
-                <input type="text" onchange="checkContent(this)" class="wrong" placeholder="Resposta incorreta 2" name="resposta-errada"/>
-                <input type="text" onchange="checkContent(this)" class="wrong-url" placeholder="URL da imagem 2" name="url-resposta-errada"/>
+                <input type="text" onchange="checkWrongAnswers(this)" class="wrong" placeholder="Resposta incorreta 2" />
+                <input type="text" onchange="checkWrongURLs(this)" class="wrong-url" placeholder="URL da imagem 2" />
                 <div class="sep"></div>
-                <input type="text" onchange="checkContent(this)" class="wrong" placeholder="Resposta incorreta 3" name="resposta-errada"/>
-                <input type="text" onchange="checkContent(this)" class="wrong-url" placeholder="URL da imagem 3" name="url-resposta-errada"/>
+                <input type="text" onchange="checkWrongAnswers(this)" class="wrong" placeholder="Resposta incorreta 3" />
+                <input type="text" onchange="checkWrongURLs(this)" class="wrong-url" placeholder="URL da imagem 3" />
             </div>
         </div>`;
     }
@@ -146,65 +146,80 @@ function esconde(pergunta) {
     pergunta.querySelector(".wrapper").classList.add("none");
 }
 
-function checkContent(input) {
-    const url = /^(https|http):\/\/.*\.(png|jpeg|jpg|svg)/g;
-    let allWrongAnswers;
-    let allWrongURLs;
-    switch (input.name) {
-        case "pergunta":
-            if (input.value.length < 20) {
-                alert("Pergunta deve ter mais de 20 caracteres.")
+function checkForCharacters(input) {
+    if (input.value.length < 20) {
+        alert("Pergunta deve ter mais de 20 caracteres.")
+    }
+}
+
+function checkForHex(input) {
+    const hex = /^#[0-9A-Fa-f]{6}$/g;
+    if (!hex.test(input.value)) {
+        alert("Cor de fundo deve ser uma cor em hexadecimal válida");
+    }
+}
+
+function checkForEmpty(input) {
+    if (input.value === "") {
+        alert("Deve existir uma resposta correta.");
+    }
+}
+
+function isValidURL(url) {
+    const urlProtocol = /^(https|http):\/\/.*\.(png|jpeg|jpg|svg)/g;
+    if (!urlProtocol.test(url)) {
+        return false;
+    }
+
+    return true;
+}
+
+function checkValidURL(input) {
+    if (!isValidURL(input.value)) {
+        alert("Deve ser um url válido");
+    }
+}
+
+function checkWrongAnswers(input) {
+    const allWrongAnswers = input.parentNode.querySelectorAll(".wrong");
+    const allWrongURLs = input.parentNode.querySelectorAll(".wrong-url");
+    for (let i = 0; i < allWrongAnswers.length; i++) {
+        if (allWrongAnswers[i].value !== "") {
+            checkWrongURLs(allWrongURLs[i]);
+            return;
+        }
+    }
+    alert("Deve existir ao menos uma resposta errada.");
+}
+
+function checkWrongURLs(input) {
+    const allWrongAnswers = input.parentNode.querySelectorAll(".wrong");
+    const allWrongURLs = input.parentNode.querySelectorAll(".wrong-url");
+    for (let i = 0; i < allWrongURLs.length; i++) {
+        if (allWrongAnswers[i].value !== "") {
+            if (!isValidURL(allWrongURLs[i].value)) {
+                alert("Deve existir uma imagem para cada resposta.")
+                break;
             }
-            break;
-        case "cor-da-pergunta":
-            const hex = /^#[0-9A-Fa-f]{6}$/g;
-            if (!hex.test(input.value) || input.value === "") {
-                alert("Cor de fundo deve ser uma cor em hexadecimal válida");
+        } else {
+            if (allWrongURLs[i].value !== "") {
+                alert("Imagem sem resposta associada.");
+                break;
             }
-            break;
-        case "resposta":
-            if (input.value === "") {
-                alert("Deve existir uma resposta correta.");
-            }
-            break;
-        case "url-resposta":
-            if (!url.test(input.value) || input.value === "") {
-                alert("Deve ser um url válido");
-            }
-            break;
-        case "resposta-errada":
-            allWrongAnswers = input.parentNode.querySelectorAll(".wrong");
-            for (let i = 0; i < allWrongAnswers.length; i++) {
-                if (allWrongAnswers[i].value !== "") {
-                    return;
-                }
-            }
-            alert("Deve existir ao menos uma resposta errada.");
-            break;
-        case "url-resposta-errada":
-            allWrongAnswers = input.parentNode.querySelectorAll(".wrong");
-            allWrongURLs = input.parentNode.querySelectorAll(".wrong-url");
-            for (let i = 0; i < allWrongURLs.length; i++) {
-                if (allWrongAnswers[i].value !== "") {
-                    if (allWrongURLs[i].value === "" || !url.test(allWrongURLs[i].value)) {
-                        alert("Deve existir uma imagem para cada resposta.")
-                        break;
-                    }
-                } else {
-                    if (allWrongURLs[i].value !== "") {
-                        alert("Imagem sem resposta associada.");
-                        break;
-                    }
-                }
-            }
-            break;
+        }
     }
 }
 
 function checkAllInputs() {
-    const listOfInputs = document.querySelectorAll("input[type='text']");
-    for (let i = 0; i < listOfInputs.length; i++) {
-        checkContent(listOfInputs[i]);
+    const questionsList = document.querySelectorAll(".pergunta");
+    for (let i = 0; i < questionsList.length; i++) {
+        const inputList = document.querySelectorAll("input[type='text']");
+        checkForCharacters(inputList[0]);
+        checkForHex(inputList[1]);
+        checkForEmpty(inputList[2]);
+        checkValidURL(inputList[3]);
+        checkWrongAnswers(inputList[4]);
+        checkWrongURLs(inputList[5]);
     }
 }
 
