@@ -20,7 +20,8 @@
     flex-direction: column;
 }
 
-.criacao-perguntas {
+.criacao-perguntas,
+.informacoes-basicas-form {
     width: 100%;
 }
 
