@@ -58,7 +58,7 @@ function mostrarTelaCriacaoPerguntas() {
     let meio = ``;
 
     const fim = `
-        <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="checkContent()"/>
+        <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" />
     </div>`;
 
     for (let i = 0; i < numeroPerguntas; i++) {
@@ -66,22 +66,22 @@ function mostrarTelaCriacaoPerguntas() {
         <div class="pergunta">
             <h3>Pergunta ${i + 1} <ion-icon name="create-outline" onclick="mostra(this)"></ion-icon></h3>
             <div class="wrapper none">
-                <input type="text" placeholder="Texto da pergunta" name="pergunta"/>
-                <input type="text" placeholder="Cor de fundo da pergunta" name="cor-da-pergunta"/>
+                <input type="text" onchange="checkContent(this)" placeholder="Texto da pergunta" name="pergunta"/>
+                <input type="text" onchange="checkContent(this)" placeholder="Cor de fundo da pergunta" name="cor-da-pergunta"/>
                 <div class="sep"></div>
                 <h3>Resposta correta</h3>
-                <input type="text" placeholder="Resposta correta" name="resposta"/>
-                <input type="text" placeholder="URL da imagem" name="url-resposta"/>
+                <input type="text" onchange="checkContent(this)" placeholder="Resposta correta" name="resposta"/>
+                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem" name="url-resposta"/>
                 <div class="sep"></div>
                 <h3>Respostas incorretas</h3>
-                <input type="text" placeholder="Resposta incorreta 1" name="resposta-errada1"/>
-                <input type="text" placeholder="URL da imagem 1" name="url-resposta-errada1"/>
+                <input type="text" onchange="checkContent(this)" placeholder="Resposta incorreta 1" name="resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem 1" name="url-resposta-errada"/>
                 <div class="sep"></div>
-                <input type="text" placeholder="Resposta incorreta 2" name="resposta-errada2"/>
-                <input type="text" placeholder="URL da imagem 2" name="url-resposta-errada2"/>
+                <input type="text" onchange="checkContent(this)" placeholder="Resposta incorreta 2" name="resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem 2" name="url-resposta-errada"/>
                 <div class="sep"></div>
-                <input type="text" placeholder="Resposta incorreta 3" name="resposta-errada3"/>
-                <input type="text" placeholder="URL da imagem 3" name="url-resposta-errada3"/>
+                <input type="text" onchange="checkContent(this)" placeholder="Resposta incorreta 3" name="resposta-errada"/>
+                <input type="text" onchange="checkContent(this)" placeholder="URL da imagem 3" name="url-resposta-errada"/>
             </div>
         </div>`;
     }
@@ -106,27 +106,31 @@ function esconde(pergunta) {
     pergunta.querySelector(".wrapper").classList.add("none");
 }
 
-function checkContent() {
-    const perguntas = document.querySelectorAll(".pergunta");
-    
-    perguntas.map(pergunta => {
-        const inputs = pergunta.querySelectorAll("input");
-        inputs.map(input => {
-            switch (input.name) {
-                case "pergunta":
-                    if (input.value.length < 20) {
-                        alert("Pergunta deve ter mais de 20 caracteres.")
-                    }
-                    break;
-                case "cor-da-pergunta":
-                    const hex = /#[0-9A-Fa-f]{6}/g;
-                    if (!hex.test(input.value)) {
-                        alert("Cor de fundo deve ser uma cor em hexadecimal válida");
-                    }
-                    break;
+function checkContent(input) {
+    const url = /^(https|http):\/\/.*\.(png|jpeg|jpg|svg)/g;
+    switch (input.name) {
+        case "pergunta":
+            if (input.value.length < 20) {
+                alert("Pergunta deve ter mais de 20 caracteres.")
             }
-        })
-    })
+            break;
+        case "cor-da-pergunta":
+            const hex = /^#[0-9A-Fa-f]{6}$/g;
+            if (!hex.test(input.value) || input.value === "") {
+                alert("Cor de fundo deve ser uma cor em hexadecimal válida");
+            }
+            break;
+        case "resposta":
+            if (input.value === "") {
+                alert("Deve existir uma resposta correta.");
+            }
+            break;
+        case "url-resposta":
+            if (!url.test(input.value) || input.value === "") {
+                alert("Deve ser um url válido");
+            }
+            break;
+    }
 }
 
 function listarQuizes() {
@@ -135,7 +139,7 @@ function listarQuizes() {
 }
 
 function putQuizes(quiz) {
-    let quizDosOutros = document.querySelector(".quiz-cards");
+    let quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
     quizDosOutros.innerHTML = ""
     for (let i = 0; i < quiz.data.length; i++) {
         const htmlQuizz = `
@@ -144,14 +148,13 @@ function putQuizes(quiz) {
             ${quiz.data[i].title}
             </p>
         </div>
-        `
-        console.log(quiz.data[i].image)
+        `;
         quizDosOutros.innerHTML += htmlQuizz
     }
     // put the background image
-    let Allquizes = document.querySelectorAll(".quiz-card")
-    for (let i = 0; i < Allquizes.length; i++) {
-        Allquizes[i].style.backgroundImage = `${backgroundGradient}, url("${quiz.data[i].image}")`
+    let allQuizes = document.querySelectorAll(".todos-quizes .quiz-card")
+    for (let i = 0; i < allQuizes.length; i++) {
+        allQuizes[i].style.backgroundImage = `${backgroundGradient}, url("${quiz.data[i].image}")`
     }
 }
 
@@ -165,5 +168,5 @@ const conteudoMutavel = document.querySelector(".container");
 let mostrando;
 // mock para numero de perguntas
 let numeroPerguntas = 5;
-const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)"
+const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
