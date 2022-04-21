@@ -1,4 +1,4 @@
-function usuarioTemQuiz () {
+function usuarioTemQuiz() {
     // Essa função está incompleta, precisamos poder criar quizz para completá-la
     const temQuiz = true;
     if (temQuiz) {
@@ -37,17 +37,57 @@ function mostrarBotaoCriarQuiz(quizesDoUsuario) {
     <input type="button" value="Criar Quizz" class="criar-quiz" onclick="mostrarTelaCriacaoQuiz()"/>`;
 }
 
-function mostrarBotaoPequeno (quizesDoUsuario) {
+function mostrarBotaoPequeno(quizesDoUsuario) {
     quizesDoUsuario.classList.remove("sem-quiz");
     quizesDoUsuario.innerHTML = `
     <div class="titulo">Seus Quizzes <ion-icon name="add-circle" onclick="mostrarTelaCriacaoQuiz()"></ion-icon></div>
     <div class="quiz-cards"></div>`;
 }
 
-function mostrarTelaCriacaoQuiz () {
+function mostrarTelaCriacaoQuiz() {
     conteudoMutavel.innerHTML = `
-    <input type="button" value="Prosseguir pra criar perguntas" onclick="mostrarTelaCriacaoPerguntas()">`;
-    // Essa função está incompleta, precisamos poder criar quizz para completá-la
+    <div class="informacoes-basicas">
+    <h3>Comece pelo começo</h3>
+    <div class="informacoes-basicas-form">
+        <input type="text" placeholder="Título do seu quizz" name="titulo-quiz"
+            onchange="checkContentInformacoesBasicas(this)" />
+        <div class="incorreto quiz-title none">
+            <h6>
+                Título do quizz incorreto, coloque algo entre 20 e 65 caracteres.
+            </h6>
+        </div>
+        <input type="text" placeholder="URL da imagem do seu quizz" name="url-imagem"
+            onchange="checkContentInformacoesBasicas(this)" />
+        <div class="incorreto quiz-url none">
+            <h6>
+                URL da imagem não encontrada.
+            </h6>
+        </div>
+        <input type="text" placeholder="Quantidade de perguntas do quizz" name="qtd-perguntas"
+            onchange="checkContentInformacoesBasicas(this)" />
+        <div class="incorreto quiz-qtdpergunta none">
+            <h6 class="numbererror none">
+                Quantidade de perguntas insuficientes. É necessário pelo menos 3.
+            </h6>
+            <h6 class="texterror none">
+                Por favor, digite um número.
+            </h6>
+        </div>
+        <input type="text" placeholder="Quantidade de níveis do quizz" name="qtd-niveis"
+            onchange="checkContentInformacoesBasicas(this)" />
+        <div class="incorreto quiz-nivel none">
+            <h6 class="numbererror none">
+                Quantidade de Níveis insuficientes. É necessário pelo menos 2.
+            </h6>
+            <h6 class="texterror none">
+                Por favor, digite um número.
+            </h6>
+        </div>
+    </div>
+    <input type="button" value="Prosseguir pra criar perguntas" class="prosseguir"
+        onclick="prosseguirParaPerguntas()" />
+    </div>
+    `;
 }
 
 function mostrarTelaCriacaoPerguntas() {
@@ -133,6 +173,114 @@ function checkContent(input) {
     }
 }
 
+
+function checkContentInformacoesBasicas(element) {
+    const informacoes = document.querySelectorAll(".informacoes-basicas input")
+    if (element.name === "titulo-quiz") {
+        console.log(element.name)
+        if (caracteresIncorretos()) {
+            document.querySelector(".quiz-title").classList.remove("none")
+            element.classList.add("background-error")
+        } else {
+            document.querySelector(".quiz-title").classList.add("none")
+            element.classList.remove("background-error")
+        }
+    }
+    if (element.name === "url-imagem") {
+        if (urlInvalida()) {
+            document.querySelector(".quiz-url").classList.remove("none")
+            element.classList.add("background-error")
+
+        } else {
+            document.querySelector(".quiz-url").classList.add("none");
+            element.classList.remove("background-error")
+        }
+    }
+    if (element.name === "qtd-perguntas") {
+        if (isNaN(element.value)) {
+            document.querySelector(".quiz-qtdpergunta .numbererror").classList.add("none")
+            document.querySelector(".quiz-qtdpergunta .texterror").classList.remove("none")
+            element.classList.add("background-error")
+            document.querySelector(".quiz-qtdpergunta").classList.remove("none")
+        } else if (qtdPerguntasInsuficientes()) {
+            document.querySelector(".quiz-qtdpergunta .numbererror").classList.remove("none")
+            document.querySelector(".quiz-qtdpergunta .texterror").classList.add("none")
+            element.classList.add("background-error")
+            document.querySelector(".quiz-qtdpergunta").classList.remove("none")
+        } else {
+            document.querySelector(".quiz-qtdpergunta").classList.add("none")
+            element.classList.remove("background-error")
+        }
+    }
+    if (element.name === "qtd-niveis") {
+        if (isNaN(element.value)) {
+            document.querySelector(".quiz-nivel .numbererror").classList.add("none")
+            document.querySelector(".quiz-nivel .texterror").classList.remove("none")
+            element.classList.add("background-error")
+            document.querySelector(".quiz-nivel").classList.remove("none")
+        } else if (niveisInsuficientes()) {
+            document.querySelector(".quiz-nivel .numbererror").classList.remove("none")
+            document.querySelector(".quiz-nivel .texterror").classList.add("none")
+            document.querySelector(".quiz-nivel").classList.remove("none")
+            element.classList.add("background-error")
+        } else {
+            document.querySelector(".quiz-nivel").classList.add("none")
+            element.classList.remove("background-error")
+        }
+    }
+}
+
+function caracteresIncorretos() {
+    const informacoes = document.querySelectorAll(".informacoes-basicas input")
+    if (informacoes[0].value.length < 20 || informacoes[0].value.length > 65) {
+        return true;
+    }
+    return false;
+}
+
+function urlInvalida() {
+    const informacoes = document.querySelectorAll(".informacoes-basicas input")
+    const url = /^(https|http):\/\/.*\.(png|jpeg|jpg|svg)/g
+    if (!url.test(informacoes[1].value)) {
+        return true;
+    }
+    return false;
+}
+
+function qtdPerguntasInsuficientes() {
+    const informacoes = document.querySelectorAll(".informacoes-basicas input")
+    if (informacoes[2].value < 2) {
+        return true;
+    }
+    return false;
+}
+
+function niveisInsuficientes() {
+    const informacoes = document.querySelectorAll(".informacoes-basicas input")
+    if (informacoes[3].value < 2) {
+        return true;
+    }
+    return false;
+}
+
+function prosseguirParaPerguntas() {
+    const incorretos = document.querySelectorAll(".incorreto")
+    const inputs = document.querySelectorAll(".informacoes-basicas-form input")
+    console.log(inputs)
+    let haCampoIncorreto = []
+    console.log(incorretos)
+    for (let i = 0; i < incorretos.length; i++) {
+        if (!incorretos[i].classList.contains("none") || inputs[i].value === "") {
+            haCampoIncorreto.push("mais um");
+        }
+    }
+    if (haCampoIncorreto.length !== 0) {
+        alert("Preencha corretamente os campos")
+    } else {
+        mostrarTelaCriacaoPerguntas();
+    }
+}
+
 function listarQuizes() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
     promise.then(putQuizes);
@@ -161,6 +309,10 @@ function putQuizes(quiz) {
 function showQuiz() {
     document.querySelector(".quizes").classList.add("none")
     // add the quizz information
+}
+
+function reload() {
+    window.location.reload()
 }
 
 
