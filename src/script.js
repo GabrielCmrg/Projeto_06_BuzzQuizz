@@ -333,6 +333,29 @@ function prosseguirParaPerguntas() {
     }
 }
 
+function sucessoQuiz() {
+    conteudoMutavel.innerHTML = `
+    <div class="sucesso-quiz">
+        <h3>
+            Comece pelo começo
+        </h3>
+        <div class="quiz-card">
+            <p>
+                ${basicInfos.quizTitle}
+            </p>
+        </div>
+        <div class="mostrar-voltar">
+            <input type="button" value="Acessar Perguntas" class="prosseguir"
+            onclick="mostrarQuizz()" />
+            <h4 onclick="voltarprahome()">
+                Voltar pra home
+            </h4>
+        </div>
+    </div>
+    `
+    document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
+}
+
 function listarQuizes() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
     promise.then(putQuizes);
@@ -343,14 +366,19 @@ function putQuizes(quiz) {
     quizDosOutros.innerHTML = ""
     for (let i = 0; i < quiz.data.length; i++) {
         const htmlQuizz = `
-        <div class="quiz-card" onclick="showQuiz()">
+        <div id="${quiz.data.length - quiz.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
             <p>
             ${quiz.data[i].title}
             </p>
         </div>
         `;
         quizDosOutros.innerHTML += htmlQuizz
+        
+
     }
+    
+    infoQuizzes = quiz.data
+    
     // put the background image
     let allQuizes = document.querySelectorAll(".todos-quizes .quiz-card")
     for (let i = 0; i < allQuizes.length; i++) {
@@ -358,18 +386,71 @@ function putQuizes(quiz) {
     }
 }
 
-function showQuiz() {
-    document.querySelector(".quizes").classList.add("none")
-    // add the quizz information
+// function getQuiz() {
+//     const requisicao = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes")
+//     requisicao.then(showQuiz)
+//     requisicao.catch(reload)
+// }
+
+function showQuiz(i) {
+    conteudoMutavel.innerHTML = `
+    <div class="quizz">
+        <div class="header-quizz">
+            <p>
+                ${infoQuizzes[i].title}
+            </p>
+        </div>
+    `
+
+    const eachoptionquiz = document.querySelectorAll(".images-question")
+    for (let j = 0; j < infoQuizzes[i].questions.length; j++) {
+        conteudoMutavel.innerHTML += `
+        <div class="question-quizz">
+            <div class="header-question">
+                <p>
+                    ${infoQuizzes[i].questions[j].title}
+                </p>
+            </div>
+            <div class="images-question">
+                <div class="image-question">
+                    <img src="${infoQuizzes[i].questions[j].answers[0].image}" alt="">
+                    <p>${infoQuizzes[i].questions[j].answers[0].text}</p>
+                </div>
+                <div class="image-question">
+                    <img src="https://4.bp.blogspot.com/-CRT7rOu49Rc/T9KUcNseefI/AAAAAAAAEes/zKJtV6sYPfo/s1600/acgwallpaper3.jpg" alt="">
+                    <p>descrição</p>
+                </div>
+                <div class="image-question">
+                    <img src="https://4.bp.blogspot.com/-CRT7rOu49Rc/T9KUcNseefI/AAAAAAAAEes/zKJtV6sYPfo/s1600/acgwallpaper3.jpg" alt="">
+                    <p>descrição</p>
+                </div>
+                <div class="image-question">
+                    <img src="https://4.bp.blogspot.com/-CRT7rOu49Rc/T9KUcNseefI/AAAAAAAAEes/zKJtV6sYPfo/s1600/acgwallpaper3.jpg" alt="">
+                    <p>descrição</p>
+                </div>
+            </div>
+        </div>
+        `
+        document.querySelectorAll(".header-question")[j].style.backgroundColor = `${infoQuizzes[i].questions[j].color}`
+    }
+    conteudoMutavel.innerHTML += "</div>"
+    document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${infoQuizzes[i].image}")`
 }
 
 function reload() {
     window.location.reload()
 }
 
+function comparador() { 
+	return Math.random() - 0.5; 
+}
+
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
 let basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 0, numberOfLevels: 0};
-const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
+let infoQuizzes = [];
+const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 65.62%, rgba(0, 0, 0, 0.8) 100%)";
+
 mostrarTelaInicial();
+
