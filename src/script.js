@@ -385,8 +385,9 @@ function prosseguirParaSucesso() {
         checkValidURL(inputs[2]);
         levels[i].imageSrc = inputs[2].value;
         checkForCharacters(description, 30);
-        levels[i].description = description;
+        levels[i].description = description.value;
     }
+    console.log(levels[0].description)
     const incorretos = document.querySelectorAll(".incorreto");
     const haCampoIncorreto = []
     for (let i = 0; i < incorretos.length; i++) {
@@ -515,6 +516,7 @@ function prosseguirParaPerguntas() {
 function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
     promise.then(putQuizes);
+    promise.catch(console.log("n carregou"))
 }
 
 function putQuizes(response, divClass=".todos-quizes") {
@@ -589,12 +591,13 @@ function shuffleArray() {
 function enviarquizServer() {
     const obj = createQuizObject()
     console.log(obj)
-    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj)
+    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes",obj)
     requisicao.then(sucessoQuiz)
     requisicao.catch(console.log("fudeu"))
 }
 
-function sucessoQuiz() {
+function sucessoQuiz(resposta) {
+    localStorageUpdate(resposta.data.id)
     conteudoMutavel.innerHTML = `
     <div class="sucesso-quiz">
         <h3>
@@ -615,6 +618,16 @@ function sucessoQuiz() {
     </div>
     `
     document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
+}
+
+function localStorageUpdate(quizid) {
+    let myQuizzID = []
+    if(localStorage.getItem("listaQuizzid")) {
+        myQuizzID = JSON.parse(localStorage.getItem("listaQuizzid"))
+    }
+    myQuizzID.push(quizid);
+    localStorage.setItem("listaQuizzid", JSON.stringify(myQuizzID))
+    console.log(localStorage.getItem("listaQuizzid"))
 }
 
 
@@ -664,10 +677,11 @@ function createQuizObject() {
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
-const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 2};
+const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: "" , numberOfLevels: ""};
 const questions = [];
 const levels = [];
 let infoQuizzes = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
+// enviarquizServer();
  
