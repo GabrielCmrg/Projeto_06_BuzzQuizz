@@ -614,31 +614,39 @@ function createQuizObject() {
     const objectToSend = {
         title: basicInfos.quizTitle,
         image: basicInfos.quizImageSrc,
-        questions: []
+        questions: [],
+        levels: []
     }
 
-    for (let i = 0; i , questions.length; i++) {
+    for (let i = 0; i < questions.length; i++) {
         objectToSend.questions.push({
-            title: questions.question,
-            color: questions.color,
-            answers: []
+            title: questions[i].question,
+            color: questions[i].color,
+            answers: [{
+                text: questions[i].correctAnswer,
+                image: questions[i].correctAnswerImage,
+                isCorrectAnswer: true
+            }]
         })
+
+        for (let j = 0; j < questions[i].wrongAnswers.length; j++) {
+            objectToSend.questions[i].answers.push({
+                text: questions[i].wrongAnswers[j],
+                image: questions[i].wrongAnswersImages[j],
+                isCorrectAnswer: false
+            })
+        }
     }
 
-    objectToSend.questions.answers.push({
-        text: questions.correctAnswer,
-        image: questions.correctAnswerImage,
-        isCorrectAnswer: true
-    })
-
-    for (let i = 0; i < questions.wrongAnswers.length; i++) {
-        objectToSend.questions.answers.push({
-            text: questions.wrongAnswers[i],
-            image: questions.wrongAnswersImages[i],
-            isCorrectAnswer: false
+    for (let i = 0; i < levels.length; i++) {
+        objectToSend.levels.push({
+            title: levels[i].title,
+            image: levels[i].imageSrc,
+            text: levels[i].description,
+            minValue: levels[i].percentage
         })
     }
-
+    
     return objectToSend;
 }
 
