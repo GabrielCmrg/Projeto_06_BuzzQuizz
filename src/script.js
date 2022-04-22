@@ -627,7 +627,6 @@ function localStorageUpdate(quizid) {
     }
     myQuizzID.push(quizid);
     localStorage.setItem("listaQuizzid", JSON.stringify(myQuizzID))
-    console.log(localStorage.getItem("listaQuizzid"))
 }
 
 
