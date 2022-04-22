@@ -2,7 +2,7 @@ function usuarioTemQuiz() {
     const userQuizesSerialized = localStorage.getItem("userQuizes");
     const userQuizes = JSON.parse(userQuizesSerialized);
 
-    const temQuiz = userQuizes.length !== 0;
+    const temQuiz = userQuizes !== null && userQuizes.length !== 0;
 
     if (temQuiz) {
         return true;
@@ -662,6 +662,5 @@ const questions = [];
 const levels = [];
 let infoQuizzes = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
-localStorage.setItem("userQuizes", "[]");
 mostrarTelaInicial();
  
