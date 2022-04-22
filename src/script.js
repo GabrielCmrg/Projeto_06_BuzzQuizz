@@ -556,12 +556,6 @@ function putQuizes(quiz) {
     }
 }
 
-// function getQuiz() {
-//     const requisicao = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes")
-//     requisicao.then(showQuiz)
-//     requisicao.catch(reload)
-// }
-
 function showQuiz(index) {
     conteudoMutavel.innerHTML = `
     <div class="quizz">
