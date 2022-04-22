@@ -9,6 +9,9 @@ function usuarioTemQuiz() {
 }
 
 function mostrarTelaInicial() {
+    window.scrollTo(0, 0);
+    questions.length = 0;
+    levels.length = 0;
     conteudoMutavel.innerHTML = `
     <div class="quizes">
         <div class="quizes-do-usuario"></div>
@@ -533,7 +536,7 @@ function putQuizes(quiz) {
     quizDosOutros.innerHTML = ""
     for (let i = 0; i < quiz.data.length; i++) {
         const htmlQuizz = `
-        <div id="${quiz.data.length - quiz.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
+        <div id="${i}" class="quiz-card" onclick="showQuiz(this.id)">
             <p>
             ${quiz.data[i].title}
             </p>
@@ -559,49 +562,48 @@ function putQuizes(quiz) {
 //     requisicao.catch(reload)
 // }
 
-function showQuiz(i) {
+function showQuiz(index) {
     conteudoMutavel.innerHTML = `
     <div class="quizz">
         <div class="header-quizz">
             <p>
-                ${infoQuizzes[i].title}
+                ${infoQuizzes[index].title}
             </p>
         </div>
     `
+    window.scrollTo(0, 0);
 
-    const eachoptionquiz = document.querySelectorAll(".images-question")
-    for (let j = 0; j < infoQuizzes[i].questions.length; j++) {
+    for (let i = 0; i < infoQuizzes[index].questions.length; i++) {
         conteudoMutavel.innerHTML += `
         <div class="question-quizz">
             <div class="header-question">
-                <p>
-                    ${infoQuizzes[i].questions[j].title}
-                </p>
+                <p>${infoQuizzes[index].questions[i].title}</p>
             </div>
-            <div class="images-question">
-                <div class="image-question">
-                    <img src="${infoQuizzes[i].questions[j].answers[0].image}" alt="">
-                    <p>${infoQuizzes[i].questions[j].answers[0].text}</p>
-                </div>
-                <div class="image-question">
-                    <img src="https://4.bp.blogspot.com/-CRT7rOu49Rc/T9KUcNseefI/AAAAAAAAEes/zKJtV6sYPfo/s1600/acgwallpaper3.jpg" alt="">
-                    <p>descrição</p>
-                </div>
-                <div class="image-question">
-                    <img src="https://4.bp.blogspot.com/-CRT7rOu49Rc/T9KUcNseefI/AAAAAAAAEes/zKJtV6sYPfo/s1600/acgwallpaper3.jpg" alt="">
-                    <p>descrição</p>
-                </div>
-                <div class="image-question">
-                    <img src="https://4.bp.blogspot.com/-CRT7rOu49Rc/T9KUcNseefI/AAAAAAAAEes/zKJtV6sYPfo/s1600/acgwallpaper3.jpg" alt="">
-                    <p>descrição</p>
-                </div>
-            </div>
+            <div class="images-question"></div>
         </div>
-        `
-        document.querySelectorAll(".header-question")[j].style.backgroundColor = `${infoQuizzes[i].questions[j].color}`
+        `;
+        document.querySelectorAll(".header-question")[i].style.backgroundColor = `${infoQuizzes[index].questions[i].color}`;
+
+        const answerSection = document.querySelectorAll(".images-question")[i];
+        
+        infoQuizzes[index].questions[i].answers.sort(shuffleArray);
+
+        for (let j = 0; j < infoQuizzes[index].questions[i].answers.length; j++){
+            answerSection.innerHTML += `
+            <div class="image-question">
+                <img 
+                    src="${infoQuizzes[index].questions[i].answers[j].image}" 
+                    alt="Imagem da resposta indisponível" />
+                <p>${infoQuizzes[index].questions[i].answers[j].text}</p>
+            </div>`;
+        }
     }
     conteudoMutavel.innerHTML += "</div>"
-    document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${infoQuizzes[i].image}")`
+    document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${infoQuizzes[index].image}")`;
+}
+
+function shuffleArray() {
+    return (Math.random() - 0.5);
 }
 
 function reload() {
@@ -645,7 +647,7 @@ function createQuizObject() {
             title: levels[i].title,
             image: levels[i].imageSrc,
             text: levels[i].description,
-            minValue: levels[i].percentage
+            minValue: Number(levels[i].percentage)
         })
     }
     

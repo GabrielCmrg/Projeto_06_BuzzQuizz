@@ -44,3 +44,39 @@ h2 {
     width: 90%;
     height: 180px;
 }
+
+.header-quizz {
+    height: 142px;
+}
+
+.header-quizz p {
+    font-size: 19px;
+}
+
+.header-question {
+    height: 90px;
+}
+
+.header-question p {
+    font-size: 19px;
+}
+
+.image-question {
+    width: 163px;
+    margin-top: 12px;
+}
+
+.image-question img {
+    width: 163px;
+    height: 113px;
+}
+
+.image-question p {
+    font-size: 13px;
+}
+
+.question-quizz {
+    width: 100%;
+    padding: 18px;
+    margin-top: 28px;
+}
