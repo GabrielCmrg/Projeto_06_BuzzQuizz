@@ -338,6 +338,8 @@ function prosseguirParaNiveis() {
         questions[i].correctAnswer = inputs[2].value;
         checkValidURL(inputs[3]);
         questions[i].correctAnswerImage = inputs[3].value;
+        questions[i].wrongAnswers = [];
+        questions[i].wrongAnswers = [];
         for (let j = 0; j < 3; j++) {
             checkWrongAnswers(inputs[4 + 2 * j]);
             questions[i].wrongAnswers.push(inputs[4 + 2 * j].value);
