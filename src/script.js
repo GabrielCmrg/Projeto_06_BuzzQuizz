@@ -1,6 +1,9 @@
 function usuarioTemQuiz() {
-    // Essa função está incompleta, precisamos poder criar quizz para completá-la
-    const temQuiz = false;
+    const userQuizesSerialized = localStorage.getItem("userQuizes");
+    const userQuizes = JSON.parse(userQuizesSerialized);
+
+    const temQuiz = userQuizes.length !== 0;
+
     if (temQuiz) {
         return true;
     }
@@ -21,16 +24,20 @@ function mostrarTelaInicial() {
         </div>
     </div>`;
     const quizesDoUsuario = document.querySelector(".quizes-do-usuario");
-    const todosQuizes = document.querySelector(".todos-quizes");
+
+    getQuizesFromServer();
 
     if (usuarioTemQuiz()) {
         mostrarBotaoPequeno(quizesDoUsuario);
-        listarQuizes(quizesDoUsuario);
+
+        const userQuizesSerialized = localStorage.getItem("userQuizes");
+        const userQuizes = JSON.parse(userQuizesSerialized);
+
+        const dummy = {data: userQuizes};
+        putQuizes(dummy, ".quizes-do-usuario");
     } else {
         mostrarBotaoCriarQuiz(quizesDoUsuario);
     }
-
-    listarQuizes(todosQuizes);
 }
 
 function mostrarBotaoCriarQuiz(quizesDoUsuario) {
@@ -526,19 +533,19 @@ function sucessoQuiz() {
     document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
 }
 
-function listarQuizes() {
+function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
     promise.then(putQuizes);
 }
 
-function putQuizes(quiz) {
-    let quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
+function putQuizes(response, divClass=".todos-quizes") {
+    const quizDosOutros = document.querySelector(`${divClass} .quiz-cards`);
     quizDosOutros.innerHTML = ""
-    for (let i = 0; i < quiz.data.length; i++) {
+    for (let i = 0; i < response.data.length; i++) {
         const htmlQuizz = `
         <div id="${i}" class="quiz-card" onclick="showQuiz(this.id)">
             <p>
-            ${quiz.data[i].title}
+            ${response.data[i].title}
             </p>
         </div>
         `;
@@ -547,12 +554,12 @@ function putQuizes(quiz) {
 
     }
     
-    infoQuizzes = quiz.data
+    infoQuizzes = response.data
     
     // put the background image
-    let allQuizes = document.querySelectorAll(".todos-quizes .quiz-card")
+    let allQuizes = document.querySelectorAll(`${divClass} .quiz-card`)
     for (let i = 0; i < allQuizes.length; i++) {
-        allQuizes[i].style.backgroundImage = `${backgroundGradient}, url("${quiz.data[i].image}")`
+        allQuizes[i].style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`
     }
 }
 
@@ -655,4 +662,6 @@ const questions = [];
 const levels = [];
 let infoQuizzes = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
+localStorage.setItem("userQuizes", "[]");
 mostrarTelaInicial();
+ 
