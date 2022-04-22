@@ -394,7 +394,7 @@ function prosseguirParaSucesso() {
     } else if (noZero) {
         alert("Ao menos um dos níveis deve ter uma porcentagem mínima de 0.")
     } else {
-        sucessoQuiz();
+        enviarquizServer();
     }
 }
 
@@ -463,7 +463,7 @@ function caracteresIncorretos() {
 
 function qtdPerguntasInsuficientes() {
     const informacoes = document.querySelectorAll(".informacoes-basicas input")
-    if (informacoes[2].value < 2) {
+    if (informacoes[2].value < 3) {
         return true;
     }
     return false;
@@ -498,28 +498,7 @@ function prosseguirParaPerguntas() {
     }
 }
 
-function sucessoQuiz() {
-    conteudoMutavel.innerHTML = `
-    <div class="sucesso-quiz">
-        <h3>
-            Comece pelo começo
-        </h3>
-        <div class="quiz-card">
-            <p>
-                ${basicInfos.quizTitle}
-            </p>
-        </div>
-        <div class="mostrar-voltar">
-            <input type="button" value="Acessar Perguntas" class="prosseguir"
-            onclick="mostrarQuizz()" />
-            <h4 onclick="voltarprahome()">
-                Voltar pra home
-            </h4>
-        </div>
-    </div>
-    `
-    document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
-}
+
 
 function listarQuizes() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
@@ -602,6 +581,38 @@ function showQuiz(i) {
     document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${infoQuizzes[i].image}")`
 }
 
+function enviarquizServer() {
+    const obj = createQuizObject()
+    console.log(obj)
+    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj)
+    requisicao.then(sucessoQuiz)
+    requisicao.catch(console.log("fudeu"))
+}
+
+function sucessoQuiz() {
+    conteudoMutavel.innerHTML = `
+    <div class="sucesso-quiz">
+        <h3>
+            Comece pelo começo
+        </h3>
+        <div class="quiz-card">
+            <p>
+                ${basicInfos.quizTitle}
+            </p>
+        </div>
+        <div class="mostrar-voltar">
+            <input type="button" value="Acessar Perguntas" class="prosseguir"
+            onclick="mostrarQuizz()" />
+            <h4 onclick="voltarprahome()">
+                Voltar pra home
+            </h4>
+        </div>
+    </div>
+    `
+    document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
+}
+
+
 function reload() {
     window.location.reload()
 }
@@ -617,7 +628,7 @@ function createQuizObject() {
         questions: []
     }
 
-    for (let i = 0; i , questions.length; i++) {
+    for (let i = 0; i < questions.length; i++) {
         objectToSend.questions.push({
             title: questions.question,
             color: questions.color,
