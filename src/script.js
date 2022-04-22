@@ -610,8 +610,8 @@ function sucessoQuiz(resposta) {
         </div>
         <div class="mostrar-voltar">
             <input type="button" value="Acessar Perguntas" class="prosseguir"
-            onclick="mostrarQuizz()" />
-            <h4 onclick="voltarprahome()">
+            onclick="showQuiz(resposta.data.id)" />
+            <h4 onclick="mostrarTelaInicial()">
                 Voltar pra home
             </h4>
         </div>
