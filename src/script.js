@@ -385,7 +385,7 @@ function prosseguirParaSucesso() {
         checkValidURL(inputs[2]);
         levels[i].imageSrc = inputs[2].value;
         checkForCharacters(description, 30);
-        levels[i].description = description;
+        levels[i].description = description.value;
     }
     const incorretos = document.querySelectorAll(".incorreto");
     const haCampoIncorreto = []
@@ -571,7 +571,7 @@ function showQuiz(index) {
                 ${infoQuizzes[index].title}
             </p>
         </div>
-    `
+    `;
     window.scrollTo(0, 0);
 
     for (let i = 0; i < infoQuizzes[index].questions.length; i++) {
