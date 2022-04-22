@@ -387,6 +387,7 @@ function prosseguirParaSucesso() {
         checkForCharacters(description, 30);
         levels[i].description = description.value;
     }
+    console.log(levels[0].description)
     const incorretos = document.querySelectorAll(".incorreto");
     const haCampoIncorreto = []
     for (let i = 0; i < incorretos.length; i++) {
@@ -406,7 +407,7 @@ function prosseguirParaSucesso() {
     } else if (noZero) {
         alert("Ao menos um dos níveis deve ter uma porcentagem mínima de 0.")
     } else {
-        sucessoQuiz();
+        enviarquizServer();
     }
 }
 
@@ -475,7 +476,7 @@ function caracteresIncorretos() {
 
 function qtdPerguntasInsuficientes() {
     const informacoes = document.querySelectorAll(".informacoes-basicas input")
-    if (informacoes[2].value < 2) {
+    if (informacoes[2].value < 3) {
         return true;
     }
     return false;
@@ -510,32 +511,12 @@ function prosseguirParaPerguntas() {
     }
 }
 
-function sucessoQuiz() {
-    conteudoMutavel.innerHTML = `
-    <div class="sucesso-quiz">
-        <h3>
-            Comece pelo começo
-        </h3>
-        <div class="quiz-card">
-            <p>
-                ${basicInfos.quizTitle}
-            </p>
-        </div>
-        <div class="mostrar-voltar">
-            <input type="button" value="Acessar Perguntas" class="prosseguir"
-            onclick="mostrarQuizz()" />
-            <h4 onclick="voltarprahome()">
-                Voltar pra home
-            </h4>
-        </div>
-    </div>
-    `
-    document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
-}
+
 
 function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
     promise.then(putQuizes);
+    promise.catch(console.log("n carregou"))
 }
 
 function putQuizes(response, divClass=".todos-quizes") {
@@ -607,12 +588,51 @@ function shuffleArray() {
     return (Math.random() - 0.5);
 }
 
-function reload() {
-    window.location.reload()
+function enviarquizServer() {
+    const obj = createQuizObject()
+    console.log(obj)
+    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes",obj)
+    requisicao.then(sucessoQuiz)
+    requisicao.catch(console.log("fudeu"))
 }
 
-function comparador() { 
-	return Math.random() - 0.5; 
+function sucessoQuiz(resposta) {
+    localStorageUpdate(resposta.data.id)
+    conteudoMutavel.innerHTML = `
+    <div class="sucesso-quiz">
+        <h3>
+            Comece pelo começo
+        </h3>
+        <div class="quiz-card">
+            <p>
+                ${basicInfos.quizTitle}
+            </p>
+        </div>
+        <div class="mostrar-voltar">
+            <input type="button" value="Acessar Perguntas" class="prosseguir"
+            onclick="mostrarQuizz()" />
+            <h4 onclick="voltarprahome()">
+                Voltar pra home
+            </h4>
+        </div>
+    </div>
+    `
+    document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
+}
+
+function localStorageUpdate(quizid) {
+    let myQuizzID = []
+    if(localStorage.getItem("listaQuizzid")) {
+        myQuizzID = JSON.parse(localStorage.getItem("listaQuizzid"))
+    }
+    myQuizzID.push(quizid);
+    localStorage.setItem("listaQuizzid", JSON.stringify(myQuizzID))
+    console.log(localStorage.getItem("listaQuizzid"))
+}
+
+
+function reload() {
+    window.location.reload()
 }
 
 function createQuizObject() {
@@ -657,10 +677,11 @@ function createQuizObject() {
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
-const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: 1, numberOfLevels: 2};
+const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: "" , numberOfLevels: ""};
 const questions = [];
 const levels = [];
 let infoQuizzes = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
+// enviarquizServer();
  
