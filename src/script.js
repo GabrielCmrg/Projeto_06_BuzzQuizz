@@ -511,77 +511,68 @@ function prosseguirParaPerguntas() {
     }
 }
 
-
-
 function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
-    promise.then(putQuizes);
-    promise.catch(console.log("n carregou"))
-}
-
-function putQuizes(response, divClass = ".todos-quizes") {
-    const quizDosOutros = document.querySelector(`${divClass} .quiz-cards`);
-    quizDosOutros.innerHTML = ""
-    for (let i = 0; i < response.data.length; i++) {
-        const htmlQuizz = `
-        <div id="${i}" class="quiz-card" onclick="showQuiz(this.id)">
-            <p>
-            ${response.data[i].title}
-            </p>
-        </div>
-        `;
-        quizDosOutros.innerHTML += htmlQuizz
-
-
-    }
-
-    infoQuizzes = response.data
-
-    // put the background image
-    let allQuizes = document.querySelectorAll(`${divClass} .quiz-card`)
-    for (let i = 0; i < allQuizes.length; i++) {
-        allQuizes[i].style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`
-    }
-}
-
-function showQuiz(index) {
-    conteudoMutavel.innerHTML = `
-    <div class="quizz">
-        <div class="header-quizz">
-            <p>
-                ${infoQuizzes[index].title}
-            </p>
-        </div>
-    `;
-    window.scrollTo(0, 0);
-
-    for (let i = 0; i < infoQuizzes[index].questions.length; i++) {
-        conteudoMutavel.innerHTML += `
-        <div class="question-quizz">
-            <div class="header-question">
-                <p>${infoQuizzes[index].questions[i].title}</p>
+    promise.then(response => {
+        const quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
+        quizDosOutros.innerHTML = ""
+        for (let i = 0; i < response.data.length; i++) {
+            quizDosOutros.innerHTML += `
+            <div id="${response.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
+                <p>${response.data[i].title}</p>
             </div>
-            <div class="images-question"></div>
-        </div>
-        `;
-        document.querySelectorAll(".header-question")[i].style.backgroundColor = `${infoQuizzes[index].questions[i].color}`;
+            `;
 
-        const answerSection = document.querySelectorAll(".images-question")[i];
-
-        infoQuizzes[index].questions[i].answers.sort(shuffleArray);
-
-        for (let j = 0; j < infoQuizzes[index].questions[i].answers.length; j++) {
-            answerSection.innerHTML += `
-            <div class="image-question ${infoQuizzes[index].questions[i].answers[j].isCorrectAnswer}" onclick="comportamentoResposta(this)">
-                <img 
-                    src="${infoQuizzes[index].questions[i].answers[j].image}" 
-                    alt="Imagem da resposta indisponível" />
-                <p>${infoQuizzes[index].questions[i].answers[j].text}</p>
-            </div>`;
+            // put the background image
+            const currentCard = quizDosOutros.querySelectorAll(".quiz-card")[i];
+            currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`;
         }
-    }
-    conteudoMutavel.innerHTML += "</div>"
-    document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${infoQuizzes[index].image}")`;
+    });
+}
+
+function showQuiz(serverId) {
+    const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${serverId}`);
+    promise.then(response => {
+        window.scrollTo(0, 0);
+        conteudoMutavel.innerHTML = `
+        <div class="quizz">
+            <div class="header-quizz">
+                <p>
+                    ${response.data.title}
+                </p>
+            </div>
+        `;
+
+        for (let i = 0; i < response.data.questions.length; i++) {
+            const question = response.data.questions[i];
+            question.answers.sort(shuffleArray);
+            conteudoMutavel.innerHTML += `
+            <div class="question-quizz">
+                <div class="header-question">
+                    <p>${question.title}</p>
+                </div>
+                <div class="images-question"></div>
+            </div>
+            `;
+            const headerSection = conteudoMutavel.querySelectorAll(".header-question")[i]
+            headerSection.style.backgroundColor = `${question.color}`;
+            
+            const answerSection = conteudoMutavel.querySelectorAll(".images-question")[i];
+            
+            for (let j = 0; j < question.answers.length; j++){
+                answerSection.innerHTML += `
+                <div class="image-question ${question.answers[j].isCorrectAnswer}" onclick="comportamentoResposta(this)">
+                    <img 
+                        src="${question.answers[j].image}" 
+                        alt="Imagem da resposta indisponível" />
+                    <p>${question.answers[j].text}</p>
+                </div>`;
+            }
+        }
+
+        conteudoMutavel.innerHTML += "</div>";
+        document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${response.data.image}")`;
+    }).catch(() => {conteudoMutavel.innerHTML = "Algo deu errado."});
 }
 
 function comportamentoResposta(element) {
@@ -647,7 +638,7 @@ function sucessoQuiz(resposta) {
         </div>
         <div class="mostrar-voltar">
             <input type="button" value="Acessar Perguntas" class="prosseguir"
-            onclick="showQuiz(resposta.data.id)" />
+            onclick="showQuiz(${resposta.data.id})" />
             <h4 onclick="mostrarTelaInicial()">
                 Voltar pra home
             </h4>
@@ -716,7 +707,6 @@ let mostrando;
 const basicInfos = { quizTitle: "", quizImageSrc: "", numberOfQuestions: "", numberOfLevels: "" };
 const questions = [];
 const levels = [];
-let infoQuizzes = [];
 let qtdAcertos = 0;
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
