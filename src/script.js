@@ -1,8 +1,8 @@
 function usuarioTemQuiz() {
-    const userQuizesSerialized = localStorage.getItem("userQuizes");
-    const userQuizes = JSON.parse(userQuizesSerialized);
+    const userQuizesIdSerialized = localStorage.getItem("listaQuizzId");
+    const userQuizesId = JSON.parse(userQuizesIdSerialized);
 
-    const temQuiz = userQuizes !== null && userQuizes.length !== 0;
+    const temQuiz = userQuizesId !== null && userQuizesId.length !== 0;
 
     if (temQuiz) {
         return true;
@@ -29,12 +29,7 @@ function mostrarTelaInicial() {
 
     if (usuarioTemQuiz()) {
         mostrarBotaoPequeno(quizesDoUsuario);
-
-        const userQuizesSerialized = localStorage.getItem("userQuizes");
-        const userQuizes = JSON.parse(userQuizesSerialized);
-
-        const dummy = {data: userQuizes};
-        putQuizes(dummy, ".quizes-do-usuario");
+        showUserQuizes();
     } else {
         mostrarBotaoCriarQuiz(quizesDoUsuario);
     }
@@ -515,7 +510,7 @@ function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
     promise.then(response => {
         const quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
-        quizDosOutros.innerHTML = ""
+        quizDosOutros.innerHTML = "";
         for (let i = 0; i < response.data.length; i++) {
             quizDosOutros.innerHTML += `
             <div id="${response.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
@@ -528,6 +523,26 @@ function getQuizesFromServer() {
             currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`;
         }
     });
+}
+
+function showUserQuizes() {
+    const userIdsSerialized = localStorage.getItem("listaQuizzId");
+    const userIds = JSON.parse(userIdsSerialized);
+
+    for (let i = 0; i < userIds.length; i++) {
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${userIds[i]}`);
+        promise.then(response => {
+            const quizesDoUsuario = document.querySelector(".quizes-do-usuario .quiz-cards");
+            quizesDoUsuario.innerHTML += `
+            <div id="${response.data.id}" class="quiz-card" onclick="showQuiz(this.id)">
+                <p>${response.data.title}</p>
+            </div>
+            `;
+
+            const currentCard = document.getElementById(response.data.id);
+            currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data.image}")`;
+        });
+    }
 }
 
 function showQuiz(serverId) {
@@ -614,11 +629,11 @@ function sucessoQuiz(resposta) {
 
 function localStorageUpdate(quizid) {
     let myQuizzID = []
-    if(localStorage.getItem("listaQuizzid")) {
-        myQuizzID = JSON.parse(localStorage.getItem("listaQuizzid"))
+    if(localStorage.getItem("listaQuizzId")) {
+        myQuizzID = JSON.parse(localStorage.getItem("listaQuizzId"))
     }
     myQuizzID.push(quizid);
-    localStorage.setItem("listaQuizzid", JSON.stringify(myQuizzID))
+    localStorage.setItem("listaQuizzId", JSON.stringify(myQuizzID))
 }
 
 
