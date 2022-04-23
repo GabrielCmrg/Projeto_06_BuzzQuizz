@@ -511,37 +511,23 @@ function prosseguirParaPerguntas() {
     }
 }
 
-
-
 function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
-    promise.then(putQuizes);
-    promise.catch(console.log("n carregou"))
-}
+    promise.then(response => {
+        const quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
+        quizDosOutros.innerHTML = ""
+        for (let i = 0; i < response.data.length; i++) {
+            quizDosOutros.innerHTML += `
+            <div id="${response.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
+                <p>${response.data[i].title}</p>
+            </div>
+            `;
 
-function putQuizes(response, divClass=".todos-quizes") {
-    const quizDosOutros = document.querySelector(`${divClass} .quiz-cards`);
-    quizDosOutros.innerHTML = ""
-    for (let i = 0; i < response.data.length; i++) {
-        const htmlQuizz = `
-        <div id="${response.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
-            <p>
-            ${response.data[i].title}
-            </p>
-        </div>
-        `;
-        quizDosOutros.innerHTML += htmlQuizz
-        
-
-    }
-    
-    infoQuizzes = response.data
-    
-    // put the background image
-    let allQuizes = document.querySelectorAll(`${divClass} .quiz-card`)
-    for (let i = 0; i < allQuizes.length; i++) {
-        allQuizes[i].style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`
-    }
+            // put the background image
+            const currentCard = quizDosOutros.querySelectorAll(".quiz-card")[i];
+            currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`;
+        }
+    });
 }
 
 function showQuiz(serverId) {
@@ -685,7 +671,6 @@ let mostrando;
 const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: "" , numberOfLevels: ""};
 const questions = [];
 const levels = [];
-let infoQuizzes = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
  
