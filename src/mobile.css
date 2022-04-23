@@ -82,5 +82,9 @@ h2 {
 .question-quizz {
     width: 100%;
     padding: 18px;
-    margin-top: 28px;
+    margin-top: 42px;
+}
+
+.question-quizz:last-child {
+    margin-bottom: 200px;
 }
