@@ -24,8 +24,8 @@ function mostrarTelaInicial() {
         </div>
     </div>`;
     const quizesDoUsuario = document.querySelector(".quizes-do-usuario");
-
     getQuizesFromServer();
+
 
     if (usuarioTemQuiz()) {
         mostrarBotaoPequeno(quizesDoUsuario);
@@ -47,6 +47,7 @@ function mostrarBotaoPequeno(quizesDoUsuario) {
     quizesDoUsuario.innerHTML = `
     <div class="titulo">Seus Quizzes <ion-icon name="add-circle" onclick="mostrarTelaCriacaoQuiz()"></ion-icon></div>
     <div class="quiz-cards"></div>`;
+    quizesDoUsuario.innerHTML += `${loader()}`
 }
 
 function mostrarTelaCriacaoQuiz() {
@@ -508,6 +509,8 @@ function prosseguirParaPerguntas() {
 
 function getQuizesFromServer() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
+    document.querySelector(".todos-quizes .quiz-cards").innerHTML += `${loader()}`
+    // document.querySelector(".quizes-do-usuario").innerHTML = `${loader()}`
     promise.then(response => {
         const quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
         quizDosOutros.innerHTML = "";
@@ -528,11 +531,11 @@ function getQuizesFromServer() {
 function showUserQuizes() {
     const userIdsSerialized = localStorage.getItem("listaQuizzId");
     const userIds = JSON.parse(userIdsSerialized);
-
     for (let i = 0; i < userIds.length; i++) {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${userIds[i]}`);
         promise.then(response => {
             const quizesDoUsuario = document.querySelector(".quizes-do-usuario .quiz-cards");
+            document.querySelector(".quizes-do-usuario .spinner").classList.add("none")
             quizesDoUsuario.innerHTML += `
             <div id="${response.data.id}" class="quiz-card" onclick="showQuiz(this.id)">
                 <p>${response.data.title}</p>
@@ -693,6 +696,16 @@ function voltarQuizz() {
 
 function shuffleArray() {
     return (Math.random() - 0.5);
+}
+
+function loader() {
+    return `
+    <div class="spinner">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>`
 }
 
 function enviarquizServer() {

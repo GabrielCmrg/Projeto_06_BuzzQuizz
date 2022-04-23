@@ -466,6 +466,13 @@ h6 {
     word-break: break-all;
 }
 
+.spinner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .none {
     display: none;
     transition: 500ms ease;
