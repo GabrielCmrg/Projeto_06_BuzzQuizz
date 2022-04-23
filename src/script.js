@@ -550,6 +550,9 @@ function showUserQuizes() {
 
 function showQuiz(serverId) {
     const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${serverId}`);
+    if (loadNaofunciona === 0) {
+        conteudoMutavel.innerHTML = `${loader()}`
+    }
     promise.then(response => {
         dadosdoquizz = response.data
         window.scrollTo(0,0);
@@ -602,6 +605,7 @@ function scrollToFirstQuestion() {
 }
 
 function comportamentoResposta(element) {
+    loadNaofunciona = 0;
     let imagens = element.parentNode;
     let image = imagens.childNodes
     for (let i = 1; i < image.length; i += 2) {
@@ -691,6 +695,7 @@ function voltarQuizz() {
     document.querySelector(".mostrar-voltar").classList.add("none")
     questoesMarcadas = [];
     qtdAcertos = 0;
+    loadNaofunciona = 1;
     showQuiz(dadosdoquizz.id)
 }
 
@@ -709,11 +714,12 @@ function loader() {
 }
 
 function enviarquizServer() {
-    const obj = createQuizObject()
+    // const obj = createQuizObject()
     console.log(obj)
     const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj)
+    conteudoMutavel.innerHTML = `${loader()}`
     requisicao.then(sucessoQuiz)
-    requisicao.catch(console.log("fudeu"))
+    // requisicao.catch(console.log("fudeu"))
 }
 
 function sucessoQuiz(resposta) {
@@ -803,5 +809,6 @@ let qtdAcertos = 0;
 let questoesMarcadas = []
 let questoesDoQuizz = 0;
 let dadosdoquizz = [];
+let loadNaofunciona = 0;
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
