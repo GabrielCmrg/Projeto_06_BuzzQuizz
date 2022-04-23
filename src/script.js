@@ -170,6 +170,7 @@ function mostrarTelaCriacaoPerguntas() {
 }
 
 function showLevelScreen() {
+    window.scrollTo(0,0)
     const inicio = `
     <div class="criacao">
         <h2>Crie suas perguntas</h2>`;
@@ -714,7 +715,7 @@ function loader() {
 }
 
 function enviarquizServer() {
-    // const obj = createQuizObject()
+    const obj = createQuizObject()
     console.log(obj)
     const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj)
     conteudoMutavel.innerHTML = `${loader()}`

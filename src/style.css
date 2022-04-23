@@ -102,6 +102,12 @@ header h2 {
     font-size: 30px;
     color: #EC362D;
     margin-left: 17px;
+    transition: 200ms;
+    cursor: pointer;
+}
+
+.titulo ion-icon:hover {
+    filter: brightness(1.5);
 }
 
 .quiz-cards {
@@ -136,12 +142,14 @@ h2 {
     transition: 500ms;
 }
 
-.pergunta ion-icon {
+.pergunta ion-icon,
+.nivel ion-icon {
     transition: 300ms;
     cursor: pointer;
 }
 
-.pergunta ion-icon:hover {
+.pergunta ion-icon:hover,
+.nivel ion-icon:hover {
     transform: translateY(-2px);
 }
 
