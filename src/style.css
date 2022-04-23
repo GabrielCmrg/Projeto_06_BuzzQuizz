@@ -68,6 +68,7 @@ header h2 {
     font-size: 21px;
     color: #EC362D;
     cursor: pointer;
+    transition: 300ms ease;
 }
 
 .criar-quiz:hover {
