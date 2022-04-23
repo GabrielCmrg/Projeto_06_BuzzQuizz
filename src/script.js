@@ -548,7 +548,9 @@ function showUserQuizes() {
 function showQuiz(serverId) {
     const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${serverId}`);
     promise.then(response => {
-        window.scrollTo(0, 0);
+        dadosdoquizz = response.data
+        window.scrollTo(0,0);
+        setTimeout(scrollToFirstQuestion, 1500)
         conteudoMutavel.innerHTML = `
         <div class="quizz">
             <div class="header-quizz">
@@ -571,10 +573,10 @@ function showQuiz(serverId) {
             `;
             const headerSection = conteudoMutavel.querySelectorAll(".header-question")[i]
             headerSection.style.backgroundColor = `${question.color}`;
-            
+
             const answerSection = conteudoMutavel.querySelectorAll(".images-question")[i];
-            
-            for (let j = 0; j < question.answers.length; j++){
+
+            for (let j = 0; j < question.answers.length; j++) {
                 answerSection.innerHTML += `
                 <div class="image-question ${question.answers[j].isCorrectAnswer}" onclick="comportamentoResposta(this)">
                     <img 
@@ -585,9 +587,15 @@ function showQuiz(serverId) {
             }
         }
 
-        conteudoMutavel.innerHTML += "</div>";
+        conteudoMutavel.innerHTML += `</div>`;
         document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${response.data.image}")`;
-    }).catch(() => {conteudoMutavel.innerHTML = "Algo deu errado."});
+        questoesDoQuizz = response.data.questions.length
+
+    }).catch(() => { conteudoMutavel.innerHTML = "Algo deu errado." });
+}
+
+function scrollToFirstQuestion() {
+    document.querySelectorAll(".question-quizz")[0].scrollIntoView({ behavior: "smooth", block: "start" })
 }
 
 function comportamentoResposta(element) {
@@ -608,7 +616,8 @@ function comportamentoResposta(element) {
     }
     // tirar opacidade do elemente clicado
     element.classList.remove("opacity")
-    // adicionar 1 à quantidade de acertos
+    // adicionar 1 à quantidade de acertos e adiciona o elemento como questão marcada
+    questoesMarcadas.push(element)
     if (element.classList.contains("true")) {
         qtdAcertos += 1;
     }
@@ -621,10 +630,65 @@ function scrollToNextQuestion() {
     let questions = document.querySelectorAll(".container .question-quizz")
     // se elemento i tiver selecionado (comresposta), scrolla pro i + 1
     for (let i = 0; i < questions.length; i++) {
-        if (questions[i].classList.contains("comresposta") && questions[i+1] !== undefined) {
-            questions[i+1].scrollIntoView({behavior: "smooth", block: "center"});
+        if (questions[i].classList.contains("comresposta") && questions[i + 1] !== undefined) {
+            questions[i + 1].scrollIntoView({ behavior: "smooth", block: "start" });
         }
     }
+    if (questoesMarcadas.length === questoesDoQuizz) {
+        const porcent = Math.round((qtdAcertos / questoesDoQuizz) * 100)
+        let nivelscroll = [];
+        let percentCerto = 0;
+        for (let i = 0; i < dadosdoquizz.levels.length; i++) {
+            nivelscroll.push(dadosdoquizz.levels[i].minValue)
+        }
+        nivelscroll.sort(function (a, b) { return a - b })
+        for (let i = 0; i < nivelscroll.length; i++) {
+            if (porcent >= nivelscroll[i]) {
+                percentCerto = nivelscroll[i]
+            }
+        }
+        for (let i = 0; i < dadosdoquizz.levels.length; i++) {
+            if (percentCerto === dadosdoquizz.levels[i].minValue) {
+                conteudoMutavel.innerHTML += `
+                <div class="resultado-quizz none">
+                    <div class="resultado-title">
+                        <p>${porcent}% de acerto: ${dadosdoquizz.levels[i].title}</p>
+                    </div>
+                    <div class="resultado-imagem-text">
+                        <div class="resultado-imagem">
+                            <img src="${dadosdoquizz.levels[i].image}" alt="não foi possível carregar a imagem">
+                        </div>
+                        <div class="resultado-text">
+                            <p>${dadosdoquizz.levels[i].text}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mostrar-voltar none">
+                    <input type="button" value="Refazer o quizz" class="prosseguir"
+                    onclick="smooth()" />
+                    <h4 onclick="mostrarTelaInicial()">
+                        Voltar pra home
+                    </h4>
+                </div>
+                `
+            }
+
+        }
+        document.querySelector(".resultado-quizz").classList.remove("none")
+        document.querySelector(".mostrar-voltar").classList.remove("none")
+        document.querySelector(".resultado-quizz").scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+}
+function smooth() {
+    window.scrollTo({top: 0, left: 0, behavior: "smooth"});
+    setTimeout(voltarQuizz, 750);
+}
+function voltarQuizz() {
+    document.querySelector(".resultado-quizz").classList.add("none")
+    document.querySelector(".mostrar-voltar").classList.add("none")
+    questoesMarcadas = [];
+    qtdAcertos = 0;
+    showQuiz(dadosdoquizz.id)
 }
 
 function shuffleArray() {
@@ -665,7 +729,7 @@ function sucessoQuiz(resposta) {
 
 function localStorageUpdate(quizid) {
     let myQuizzID = []
-    if(localStorage.getItem("listaQuizzId")) {
+    if (localStorage.getItem("listaQuizzId")) {
         myQuizzID = JSON.parse(localStorage.getItem("listaQuizzId"))
     }
     myQuizzID.push(quizid);
@@ -723,5 +787,8 @@ const basicInfos = { quizTitle: "", quizImageSrc: "", numberOfQuestions: "", num
 const questions = [];
 const levels = [];
 let qtdAcertos = 0;
+let questoesMarcadas = []
+let questoesDoQuizz = 0;
+let dadosdoquizz = [];
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
