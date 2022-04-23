@@ -378,11 +378,17 @@ h6 {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
+    transition: 100ms;
 }
 
 .image-question img {
     width: 330px;
     height: 175px;
+    cursor: pointer;
+}
+
+.opacity {
+    opacity: 0.3;
 }
 
 .image-question p {
@@ -390,6 +396,7 @@ h6 {
     font-size: 20px;
     margin-top: 12px;
     word-break: break-all;
+    transition: 100ms;
 }
 
 .none {

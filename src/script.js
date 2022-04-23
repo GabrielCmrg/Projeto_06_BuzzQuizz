@@ -33,7 +33,7 @@ function mostrarTelaInicial() {
         const userQuizesSerialized = localStorage.getItem("userQuizes");
         const userQuizes = JSON.parse(userQuizesSerialized);
 
-        const dummy = {data: userQuizes};
+        const dummy = { data: userQuizes };
         putQuizes(dummy, ".quizes-do-usuario");
     } else {
         mostrarBotaoCriarQuiz(quizesDoUsuario);
@@ -159,11 +159,11 @@ function mostrarTelaCriacaoPerguntas() {
             </div>
         </div>`;
         questions.push({
-            question: "", 
-            color: "", 
-            correctAnswer: "", 
-            correctAnswerImage: "", 
-            wrongAnswers: [], 
+            question: "",
+            color: "",
+            correctAnswer: "",
+            correctAnswerImage: "",
+            wrongAnswers: [],
             wrongAnswersImages: [],
         })
     }
@@ -204,9 +204,9 @@ function showLevelScreen() {
             </div>
         </div>`;
         levels.push({
-            title: "", 
-            percentage: "", 
-            imageSrc: "", 
+            title: "",
+            percentage: "",
+            imageSrc: "",
             description: "",
         })
     }
@@ -216,7 +216,7 @@ function showLevelScreen() {
     mostra(document.querySelector(".nivel ion-icon"));
 }
 
-function checkPercentage (input) {
+function checkPercentage(input) {
     const number = parseInt(input.value);
     input.value = number;
     if (number < 0 || number > 100 || isNaN(number)) {
@@ -398,7 +398,7 @@ function prosseguirParaSucesso() {
     const allPercentages = document.querySelectorAll(".percentage-input");
     let noZero = true;
     for (let i = 0; i < allPercentages.length; i++) {
-        if (Number(allPercentages[i].value) == 0){
+        if (Number(allPercentages[i].value) == 0) {
             noZero = false;
         }
     }
@@ -519,7 +519,7 @@ function getQuizesFromServer() {
     promise.catch(console.log("n carregou"))
 }
 
-function putQuizes(response, divClass=".todos-quizes") {
+function putQuizes(response, divClass = ".todos-quizes") {
     const quizDosOutros = document.querySelector(`${divClass} .quiz-cards`);
     quizDosOutros.innerHTML = ""
     for (let i = 0; i < response.data.length; i++) {
@@ -531,12 +531,12 @@ function putQuizes(response, divClass=".todos-quizes") {
         </div>
         `;
         quizDosOutros.innerHTML += htmlQuizz
-        
+
 
     }
-    
+
     infoQuizzes = response.data
-    
+
     // put the background image
     let allQuizes = document.querySelectorAll(`${divClass} .quiz-card`)
     for (let i = 0; i < allQuizes.length; i++) {
@@ -567,12 +567,12 @@ function showQuiz(index) {
         document.querySelectorAll(".header-question")[i].style.backgroundColor = `${infoQuizzes[index].questions[i].color}`;
 
         const answerSection = document.querySelectorAll(".images-question")[i];
-        
+
         infoQuizzes[index].questions[i].answers.sort(shuffleArray);
 
-        for (let j = 0; j < infoQuizzes[index].questions[i].answers.length; j++){
+        for (let j = 0; j < infoQuizzes[index].questions[i].answers.length; j++) {
             answerSection.innerHTML += `
-            <div class="image-question">
+            <div class="image-question ${infoQuizzes[index].questions[i].answers[j].isCorrectAnswer}" onclick="comportamentoResposta(this)">
                 <img 
                     src="${infoQuizzes[index].questions[i].answers[j].image}" 
                     alt="Imagem da resposta indisponível" />
@@ -584,6 +584,43 @@ function showQuiz(index) {
     document.querySelector(".header-quizz").style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.57), rgba(0, 0, 0, 0.57)), url("${infoQuizzes[index].image}")`;
 }
 
+function comportamentoResposta(element) {
+    let imagens = element.parentNode;
+    let image = imagens.childNodes
+    for (let i = 1; i < image.length; i += 2) {
+        // tirar o botão de todos - adicionar opacidade 0.3 em todos
+        image[i].setAttribute("onclick", "");
+        image[i].classList.add("opacity")
+        imagens.parentNode.classList.add("comresposta")
+        // colocar cor red no errado; verde no certo
+        if (image[i].classList.contains("false")) {
+            image[i].childNodes[3].style.color = "red"
+        }
+        if (image[i].classList.contains("true")) {
+            image[i].childNodes[3].style.color = "green"
+        }
+    }
+    // tirar opacidade do elemente clicado
+    element.classList.remove("opacity")
+    // adicionar 1 à quantidade de acertos
+    if (element.classList.contains("true")) {
+        qtdAcertos += 1;
+    }
+    // chamar a função de scrollar a tela
+    setTimeout(scrollToNextQuestion, 2000)
+}
+
+function scrollToNextQuestion() {
+    // elemento que contem toda a pergunta
+    let questions = document.querySelectorAll(".container .question-quizz")
+    // se elemento i tiver selecionado (comresposta), scrolla pro i + 1
+    for (let i = 0; i < questions.length; i++) {
+        if (questions[i].classList.contains("comresposta") && questions[i+1] !== undefined) {
+            questions[i+1].scrollIntoView({behavior: "smooth"})
+        }
+    }
+}
+
 function shuffleArray() {
     return (Math.random() - 0.5);
 }
@@ -591,7 +628,7 @@ function shuffleArray() {
 function enviarquizServer() {
     const obj = createQuizObject()
     console.log(obj)
-    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes",obj)
+    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj)
     requisicao.then(sucessoQuiz)
     requisicao.catch(console.log("fudeu"))
 }
@@ -622,7 +659,7 @@ function sucessoQuiz(resposta) {
 
 function localStorageUpdate(quizid) {
     let myQuizzID = []
-    if(localStorage.getItem("listaQuizzid")) {
+    if (localStorage.getItem("listaQuizzid")) {
         myQuizzID = JSON.parse(localStorage.getItem("listaQuizzid"))
     }
     myQuizzID.push(quizid);
@@ -670,16 +707,16 @@ function createQuizObject() {
             minValue: Number(levels[i].percentage)
         })
     }
-    
+
     return objectToSend;
 }
 
 const conteudoMutavel = document.querySelector(".container");
 let mostrando;
-const basicInfos = {quizTitle: "", quizImageSrc: "", numberOfQuestions: "" , numberOfLevels: ""};
+const basicInfos = { quizTitle: "", quizImageSrc: "", numberOfQuestions: "", numberOfLevels: "" };
 const questions = [];
 const levels = [];
 let infoQuizzes = [];
+let qtdAcertos = 0;
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
- 
