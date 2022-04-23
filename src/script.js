@@ -616,7 +616,7 @@ function scrollToNextQuestion() {
     // se elemento i tiver selecionado (comresposta), scrolla pro i + 1
     for (let i = 0; i < questions.length; i++) {
         if (questions[i].classList.contains("comresposta") && questions[i+1] !== undefined) {
-            questions[i+1].scrollIntoView({behavior: "smooth"})
+            questions[i+1].scrollIntoView({behavior: "smooth", block: "center"});
         }
     }
 }
