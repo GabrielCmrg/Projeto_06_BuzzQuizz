@@ -29,16 +29,7 @@ function mostrarTelaInicial() {
 
     if (usuarioTemQuiz()) {
         mostrarBotaoPequeno(quizesDoUsuario);
-<<<<<<< HEAD
         showUserQuizes();
-=======
-
-        const userQuizesSerialized = localStorage.getItem("userQuizes");
-        const userQuizes = JSON.parse(userQuizesSerialized);
-
-        const dummy = { data: userQuizes };
-        putQuizes(dummy, ".quizes-do-usuario");
->>>>>>> 91b3eb37b194efd4cc6d8bfc74c5ee28bc3ba7e3
     } else {
         mostrarBotaoCriarQuiz(quizesDoUsuario);
     }
@@ -674,13 +665,8 @@ function sucessoQuiz(resposta) {
 
 function localStorageUpdate(quizid) {
     let myQuizzID = []
-<<<<<<< HEAD
     if(localStorage.getItem("listaQuizzId")) {
         myQuizzID = JSON.parse(localStorage.getItem("listaQuizzId"))
-=======
-    if (localStorage.getItem("listaQuizzid")) {
-        myQuizzID = JSON.parse(localStorage.getItem("listaQuizzid"))
->>>>>>> 91b3eb37b194efd4cc6d8bfc74c5ee28bc3ba7e3
     }
     myQuizzID.push(quizid);
     localStorage.setItem("listaQuizzId", JSON.stringify(myQuizzID))
