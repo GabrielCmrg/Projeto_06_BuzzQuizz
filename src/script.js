@@ -1,8 +1,8 @@
 function usuarioTemQuiz() {
-    const userQuizesIdSerialized = localStorage.getItem("listaQuizzId");
-    const userQuizesId = JSON.parse(userQuizesIdSerialized);
+    const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
+    const userQuizes = JSON.parse(userQuizesSerialized);
 
-    const temQuiz = userQuizesId !== null && userQuizesId.length !== 0;
+    const temQuiz = userQuizes !== null && userQuizes.length !== 0;
 
     if (temQuiz) {
         return true;
@@ -384,7 +384,6 @@ function prosseguirParaSucesso() {
         checkForCharacters(description, 30);
         levels[i].description = description.value;
     }
-    console.log(levels[0].description)
     const incorretos = document.querySelectorAll(".incorreto");
     const haCampoIncorreto = []
     for (let i = 0; i < incorretos.length; i++) {
@@ -410,7 +409,6 @@ function prosseguirParaSucesso() {
 
 function checkContentInformacoesBasicas(element) {
     if (element.name === "titulo-quiz") {
-        console.log(element.name)
         if (caracteresIncorretos()) {
             document.querySelector(".quiz-title").classList.remove("none")
             element.classList.add("background-error")
@@ -503,7 +501,6 @@ function prosseguirParaPerguntas() {
         basicInfos.quizImageSrc = inputs[1].value;
         basicInfos.numberOfQuestions = inputs[2].value;
         basicInfos.numberOfLevels = inputs[3].value;
-        console.log(basicInfos)
         mostrarTelaCriacaoPerguntas();
     }
 }
@@ -530,21 +527,53 @@ function getQuizesFromServer() {
 }
 
 function showUserQuizes() {
-    const userIdsSerialized = localStorage.getItem("listaQuizzId");
-    const userIds = JSON.parse(userIdsSerialized);
-    for (let i = 0; i < userIds.length; i++) {
-        const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${userIds[i]}`);
+    const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
+    const userQuizes= JSON.parse(userQuizesSerialized);
+    for (let i = 0; i < userQuizes.length; i++) {
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${userQuizes[i].id}`);
         promise.then(response => {
             const quizesDoUsuario = document.querySelector(".quizes-do-usuario .quiz-cards");
-            document.querySelector(".quizes-do-usuario .spinner").classList.add("none")
+            document.querySelector(".quizes-do-usuario .spinner").classList.add("none");
             quizesDoUsuario.innerHTML += `
             <div id="${response.data.id}" class="quiz-card" onclick="showQuiz(this.id)">
                 <p>${response.data.title}</p>
+                <div class="buttons">
+                    <div class="edit-button">
+                        <ion-icon name="create-outline"></ion-icon>
+                    </div>
+                    <div class="trash-button" onclick="event.stopPropagation(); deleteQuiz(${response.data.id})">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </div>
+                </div>
             </div>
             `;
 
             const currentCard = document.getElementById(response.data.id);
             currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data.image}")`;
+        });
+    }
+}
+
+function deleteQuiz(quizId) {
+    const confirmation = prompt("Você tem certeza que deseja apagar esse quiz?\
+    Não há como voltar depois de confirmado. (Digite apenas \"sim\" ou \"não\")");
+
+    if (confirmation === null || confirmation === "não") {
+        mostrarTelaInicial();
+    } else if (confirmation === "sim") {
+        const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
+        const userQuizes = JSON.parse(userQuizesSerialized);
+        const thisQuiz = userQuizes.filter(quiz => quiz.id === quizId)[0];
+        const promise = axios.delete(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${quizId}`, {
+            headers: {
+                "Secret-Key": thisQuiz.key
+            }
+        });
+        promise.then(() => {
+            userQuizes.pop(userQuizes.indexOf(thisQuiz));
+            const newUserQuizesSerialized = JSON.stringify(userQuizes);
+            localStorage.setItem(LOCAL_STORAGE_NAME, newUserQuizesSerialized);
+            mostrarTelaInicial();
         });
     }
 }
@@ -715,16 +744,14 @@ function loader() {
 }
 
 function enviarquizServer() {
-    const obj = createQuizObject()
-    console.log(obj)
-    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj)
-    conteudoMutavel.innerHTML = `${loader()}`
-    requisicao.then(sucessoQuiz)
-    // requisicao.catch(console.log("fudeu"))
+    const obj = createQuizObject();
+    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj);
+    conteudoMutavel.innerHTML = `${loader()}`;
+    requisicao.then(sucessoQuiz);
 }
 
 function sucessoQuiz(resposta) {
-    localStorageUpdate(resposta.data.id)
+    localStorageUpdate(resposta.data.id, resposta.data.key)
     conteudoMutavel.innerHTML = `
     <div class="sucesso-quiz">
         <h3>
@@ -747,13 +774,13 @@ function sucessoQuiz(resposta) {
     document.querySelector(".sucesso-quiz .quiz-card").style.backgroundImage = `${backgroundGradient}, url(${basicInfos.quizImageSrc})`
 }
 
-function localStorageUpdate(quizid) {
-    let myQuizzID = []
-    if (localStorage.getItem("listaQuizzId")) {
-        myQuizzID = JSON.parse(localStorage.getItem("listaQuizzId"))
+function localStorageUpdate(quizId, quizKey) {
+    let myQuizzID = [];
+    if (localStorage.getItem(LOCAL_STORAGE_NAME) !== null) {
+        myQuizzID = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME));
     }
-    myQuizzID.push(quizid);
-    localStorage.setItem("listaQuizzId", JSON.stringify(myQuizzID))
+    myQuizzID.push({id: quizId, key: quizKey});
+    localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(myQuizzID));
 }
 
 
@@ -806,6 +833,7 @@ let mostrando;
 const basicInfos = { quizTitle: "", quizImageSrc: "", numberOfQuestions: "", numberOfLevels: "" };
 const questions = [];
 const levels = [];
+const LOCAL_STORAGE_NAME = "userQuizes";
 let qtdAcertos = 0;
 let questoesMarcadas = []
 let questoesDoQuizz = 0;
