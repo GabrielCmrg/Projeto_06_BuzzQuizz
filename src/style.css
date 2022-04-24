@@ -36,6 +36,7 @@ header h2 {
     flex-direction: column;
     align-items: center;
     margin-top: 69px;
+    position: relative;
 }
 
 .quizes {
@@ -522,4 +523,8 @@ h6 {
 
 .background-error {
     background-color: #FFE9E9;
+}
+
+.loading {
+    position: sticky;
 }

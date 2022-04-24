@@ -15,6 +15,7 @@ function mostrarTelaInicial() {
     window.scrollTo(0, 0);
     questions.length = 0;
     levels.length = 0;
+    editando.status = false;
     conteudoMutavel.innerHTML = `
     <div class="quizes">
         <div class="quizes-do-usuario"></div>
@@ -93,7 +94,21 @@ function mostrarTelaCriacaoQuiz() {
     <input type="button" value="Prosseguir pra criar perguntas" class="prosseguir"
         onclick="prosseguirParaPerguntas()" />
     </div>
+    <div class="loading"></div>
     `;
+
+    if (editando.status) {
+        document.querySelector(".loading").innerHTML = loader();
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
+        promise.then(response => {
+            const allInputs = document.querySelectorAll("input[type='text']");
+            allInputs[0].value = response.data.title;
+            allInputs[1].value = response.data.image;
+            allInputs[2].value = response.data.questions.length;
+            allInputs[3].value = response.data.levels.length;
+            document.querySelector(".loading").innerHTML = "";
+        });
+    }
 }
 
 function mostrarTelaCriacaoPerguntas() {
@@ -105,7 +120,8 @@ function mostrarTelaCriacaoPerguntas() {
 
     const fim = `
         <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="prosseguirParaNiveis()" />
-    </div>`;
+    </div>
+    <div class="loading"></div>`;
 
     for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
         meio += `
@@ -161,7 +177,33 @@ function mostrarTelaCriacaoPerguntas() {
             correctAnswerImage: "",
             wrongAnswers: [],
             wrongAnswersImages: [],
-        })
+        });
+
+        if (editando.status) {
+            document.querySelector(".loading").innerHTML = loader();
+            const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
+            promise.then(response => {
+                const allQuestions = document.querySelectorAll(".pergunta");
+                const allInputsThisQuestion = allQuestions[i].querySelectorAll("input[type='text']");
+                allInputsThisQuestion[0].value = response.data.questions[i].title;
+                allInputsThisQuestion[1].value = response.data.questions[i].color;
+                const answers = response.data.questions[i].answers;
+                let count = 0;
+                for (let j = 0; j < answers.length; j++) {
+                    if (answers[j].isCorrectAnswer) {
+                        allInputsThisQuestion[2].value = answers[j].text;
+                        allInputsThisQuestion[3].value = answers[j].image;
+                    } else {
+                        allInputsThisQuestion[4 + count].value = answers[j].text;
+                        allInputsThisQuestion[5 + count].value = answers[j].image;
+                        count++;
+                    }
+                }
+                if (i === (basicInfos.numberOfQuestions - 1)) {
+                    document.querySelector(".loading").innerHTML = "";
+                }
+            });
+        }
     }
 
     conteudoMutavel.innerHTML = inicio + meio + fim;
@@ -179,7 +221,8 @@ function showLevelScreen() {
 
     const fim = `
         <input type="button" value="Finalizar Quizz" class="prosseguir" onclick="prosseguirParaSucesso()" />
-    </div>`;
+    </div>
+    <div class="loading"></div>`;
 
     for (let i = 0; i < basicInfos.numberOfLevels; i++) {
         meio += `
@@ -205,7 +248,23 @@ function showLevelScreen() {
             percentage: "",
             imageSrc: "",
             description: "",
-        })
+        });
+
+        if (editando.status) {
+            document.querySelector(".loading").innerHTML = loader();
+            const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
+            promise.then(response => {
+                const allLevels = document.querySelectorAll(".nivel");
+                const allInputsThisLevel = allLevels[i].querySelectorAll("input[type='text']");
+                allInputsThisLevel[0].value = response.data.levels[i].title;
+                allInputsThisLevel[1].value = response.data.levels[i].minValue;
+                allInputsThisLevel[2].value = response.data.levels[i].image;
+                document.querySelector("textarea").value = response.data.levels[i].text;
+                if (i === (basicInfos.numberOfLevels - 1)) {
+                    document.querySelector(".loading").innerHTML = "";
+                }
+            });
+        }
     }
 
     conteudoMutavel.innerHTML = inicio + meio + fim;
@@ -538,7 +597,7 @@ function showUserQuizes() {
             <div id="${response.data.id}" class="quiz-card" onclick="showQuiz(this.id)">
                 <p>${response.data.title}</p>
                 <div class="buttons">
-                    <div class="edit-button">
+                    <div class="edit-button" onclick="event.stopPropagation(); editQuiz(${response.data.id})">
                         <ion-icon name="create-outline"></ion-icon>
                     </div>
                     <div class="trash-button" onclick="event.stopPropagation(); deleteQuiz(${response.data.id})">
@@ -554,6 +613,22 @@ function showUserQuizes() {
     }
 }
 
+function editQuiz(quizId) {
+    editando.status = true;
+    editando.id = quizId;
+    const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
+    const userQuizes = JSON.parse(userQuizesSerialized);
+    const thisQuiz = userQuizes.filter(quiz => quiz.id === quizId)[0];
+    editando.key = thisQuiz.key;
+    basicInfos.quizTitle = "";
+    basicInfos.quizImageSrc = "";
+    basicInfos.numberOfQuestions = "";
+    basicInfos.numberOfLevels = "";
+    questions.length = 0;
+    levels.length = 0;
+    mostrarTelaCriacaoQuiz();
+}
+
 function deleteQuiz(quizId) {
     const confirmation = prompt("Você tem certeza que deseja apagar esse quiz?\
     Não há como voltar depois de confirmado. (Digite apenas \"sim\" ou \"não\")");
@@ -561,6 +636,7 @@ function deleteQuiz(quizId) {
     if (confirmation === null || confirmation === "não") {
         mostrarTelaInicial();
     } else if (confirmation === "sim") {
+        conteudoMutavel.innerHTML = `${loader()}`
         const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
         const userQuizes = JSON.parse(userQuizesSerialized);
         const thisQuiz = userQuizes.filter(quiz => quiz.id === quizId)[0];
@@ -575,6 +651,8 @@ function deleteQuiz(quizId) {
             localStorage.setItem(LOCAL_STORAGE_NAME, newUserQuizesSerialized);
             mostrarTelaInicial();
         });
+    } else {
+        alert("Por favor, responda apenas com \"sim\" ou \"não\"");
     }
 }
 
@@ -745,13 +823,23 @@ function loader() {
 
 function enviarquizServer() {
     const obj = createQuizObject();
-    const requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj);
+    let requisicao;
+    if (editando.status) {
+        requisicao = axios.put(
+            `https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`, 
+            obj, 
+            {headers: {"Secret-Key": editando.key}}
+            );
+    } else {
+        requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj);
+    }
     conteudoMutavel.innerHTML = `${loader()}`;
     requisicao.then(sucessoQuiz);
 }
 
 function sucessoQuiz(resposta) {
-    localStorageUpdate(resposta.data.id, resposta.data.key)
+    localStorageUpdate(resposta.data.id, resposta.data.key);;
+    editando.status = false;
     conteudoMutavel.innerHTML = `
     <div class="sucesso-quiz">
         <h3>
@@ -775,12 +863,18 @@ function sucessoQuiz(resposta) {
 }
 
 function localStorageUpdate(quizId, quizKey) {
-    let myQuizzID = [];
+    let myQuizList = [];
     if (localStorage.getItem(LOCAL_STORAGE_NAME) !== null) {
-        myQuizzID = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME));
+        myQuizList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME));
     }
-    myQuizzID.push({id: quizId, key: quizKey});
-    localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(myQuizzID));
+
+    for (let i = 0; i < myQuizList.length; i++) {
+        if (myQuizList[i].id === quizId) {
+            return;
+        }
+    }
+    myQuizList.push({id: quizId, key: quizKey});
+    localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(myQuizList));
 }
 
 
@@ -839,5 +933,6 @@ let questoesMarcadas = []
 let questoesDoQuizz = 0;
 let dadosdoquizz = [];
 let loadNaofunciona = 0;
+const editando = {status: false, id: "", key: ""};
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
