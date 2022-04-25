@@ -1,11 +1,10 @@
-.container {
-    padding: 0 17px;
-}
+/* .container {
+
+} */
 
 .quizes {
     width: 100%;
-    margin-left: 18px;
-    margin-right: 18px;
+    padding: 0 5px;
 }
 
 .quizes-do-usuario {
@@ -18,10 +17,16 @@
 
 .titulo {
     justify-content: space-between;
+    min-width: 340px;
+    /* width: 100%; */
 }
 
 .quiz-cards {
     flex-direction: column;
+}
+
+.criacao {
+    padding: 0 17px;
 }
 
 .criacao,
@@ -31,6 +36,7 @@
 }
 
 .informacoes-basicas {
+    padding: 0 17px;
     width: 100%;
 }
 

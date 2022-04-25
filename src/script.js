@@ -847,7 +847,7 @@ function loader() {
 }
 
 function enviarquizServer() {
-    // const obj = createQuizObject();
+    const obj = createQuizObject();
     let requisicao;
     if (editando.status) {
         requisicao = axios.put(
