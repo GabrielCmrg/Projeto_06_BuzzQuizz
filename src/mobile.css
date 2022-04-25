@@ -80,13 +80,18 @@ h2 {
 }
 
 .image-question {
-    width: 163px;
+    width: 48%;
+    max-width: 330px;
     margin-top: 12px;
 }
 
 .image-question img {
-    width: 163px;
-    height: 113px;
+    width: 100%;
+    max-width: 330px;
+    background-size: cover;
+    object-fit: cover;
+    background-position: center;
+    /* height: 113px; */
 }
 
 .image-question p {
@@ -95,10 +100,36 @@ h2 {
 
 .question-quizz {
     width: 100%;
+    max-width: 759px;
     padding: 18px;
     margin-top: 42px;
 }
 
 .question-quizz:last-child {
     margin-bottom: 200px;
+}
+
+.resultado-imagem-text {
+    height: 100%;
+}
+
+.resultado-quizz {
+    max-width: 759px;
+    width: 100%;
+}
+
+.resultado-text {
+    height: 100%;
+}
+
+.resultado-imagem {
+    max-width: 330px;
+    height: 100%;
+}
+
+.resultado-imagem img {
+    width: 100%;
+    size: cover;
+    object-fit: cover;
+    position: center;
 }
