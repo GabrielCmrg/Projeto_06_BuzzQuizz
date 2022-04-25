@@ -622,10 +622,10 @@ function showUserQuizes() {
             <div id="${response.data.id}" class="quiz-card" onclick="showQuiz(this.id)">
                 <p>${response.data.title}</p>
                 <div class="buttons">
-                    <div class="edit-button" onclick="event.stopPropagation(); editQuiz(${response.data.id})">
+                    <div class="edit-button" title="Editar Quizz" onclick="event.stopPropagation(); editQuiz(${response.data.id})">
                         <ion-icon name="create-outline"></ion-icon>
                     </div>
-                    <div class="trash-button" onclick="event.stopPropagation(); deleteQuiz(${response.data.id})">
+                    <div class="trash-button" title="Apagar Quizz" onclick="event.stopPropagation(); deleteQuiz(${response.data.id})">
                         <ion-icon name="trash-outline"></ion-icon>
                     </div>
                 </div>
@@ -689,7 +689,7 @@ function showQuiz(serverId) {
     promise.then(response => {
         dadosdoquizz = response.data
         window.scrollTo(0,0);
-        setTimeout(scrollToFirstQuestion, 1500)
+        setTimeout(scrollToFirstQuestion, 750)
         conteudoMutavel.innerHTML = `
         <div class="quizz">
             <div class="header-quizz">
