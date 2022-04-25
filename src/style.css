@@ -36,7 +36,6 @@ header h2 {
     flex-direction: column;
     align-items: center;
     margin-top: 69px;
-    position: relative;
 }
 
 .quizes {
@@ -530,5 +529,7 @@ h6 {
 }
 
 .loading {
-    position: sticky;
+    position: absolute;
+    right: 20px;
+    top: 70px;
 }

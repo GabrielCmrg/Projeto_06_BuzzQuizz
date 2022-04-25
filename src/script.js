@@ -53,44 +53,44 @@ function mostrarBotaoPequeno(quizesDoUsuario) {
 function mostrarTelaCriacaoQuiz() {
     conteudoMutavel.innerHTML = `
     <div class="informacoes-basicas">
-    <h3>Comece pelo começo</h3>
-    <div class="informacoes-basicas-form">
-        <input type="text" placeholder="Título do seu quizz" name="titulo-quiz"
-            onchange="checkContentInformacoesBasicas(this)" />
-        <div class="incorreto quiz-title none">
-            <h6>
-                Título do quizz incorreto, coloque algo entre 20 e 65 caracteres.
-            </h6>
+        <h3>Comece pelo começo</h3>
+        <div class="informacoes-basicas-form">
+            <input type="text" placeholder="Título do seu quizz" name="titulo-quiz"
+                onchange="checkContentInformacoesBasicas(this)" />
+            <div class="incorreto quiz-title none">
+                <h6>
+                    Título do quizz incorreto, coloque algo entre 20 e 65 caracteres.
+                </h6>
+            </div>
+            <input type="text" placeholder="URL da imagem do seu quizz" name="url-imagem"
+                onchange="checkContentInformacoesBasicas(this)" />
+            <div class="incorreto quiz-url none">
+                <h6>
+                    URL da imagem não encontrada.
+                </h6>
+            </div>
+            <input type="text" placeholder="Quantidade de perguntas do quizz" name="qtd-perguntas"
+                onchange="checkContentInformacoesBasicas(this)" />
+            <div class="incorreto quiz-qtdpergunta none">
+                <h6 class="numbererror none">
+                    Quantidade de perguntas insuficientes. É necessário pelo menos 3.
+                </h6>
+                <h6 class="texterror none">
+                    Por favor, digite um número.
+                </h6>
+            </div>
+            <input type="text" placeholder="Quantidade de níveis do quizz" name="qtd-niveis"
+                onchange="checkContentInformacoesBasicas(this)" />
+            <div class="incorreto quiz-nivel none">
+                <h6 class="numbererror none">
+                    Quantidade de Níveis insuficientes. É necessário pelo menos 2.
+                </h6>
+                <h6 class="texterror none">
+                    Por favor, digite um número.
+                </h6>
+            </div>
         </div>
-        <input type="text" placeholder="URL da imagem do seu quizz" name="url-imagem"
-            onchange="checkContentInformacoesBasicas(this)" />
-        <div class="incorreto quiz-url none">
-            <h6>
-                URL da imagem não encontrada.
-            </h6>
-        </div>
-        <input type="text" placeholder="Quantidade de perguntas do quizz" name="qtd-perguntas"
-            onchange="checkContentInformacoesBasicas(this)" />
-        <div class="incorreto quiz-qtdpergunta none">
-            <h6 class="numbererror none">
-                Quantidade de perguntas insuficientes. É necessário pelo menos 3.
-            </h6>
-            <h6 class="texterror none">
-                Por favor, digite um número.
-            </h6>
-        </div>
-        <input type="text" placeholder="Quantidade de níveis do quizz" name="qtd-niveis"
-            onchange="checkContentInformacoesBasicas(this)" />
-        <div class="incorreto quiz-nivel none">
-            <h6 class="numbererror none">
-                Quantidade de Níveis insuficientes. É necessário pelo menos 2.
-            </h6>
-            <h6 class="texterror none">
-                Por favor, digite um número.
-            </h6>
-        </div>
-    </div>
-    <input type="button" value="Prosseguir pra criar perguntas" class="prosseguir"
+        <input type="button" value="Prosseguir pra criar perguntas" class="prosseguir"
         onclick="prosseguirParaPerguntas()" />
     </div>
     <div class="loading"></div>
@@ -169,6 +169,7 @@ function mostrarTelaCriacaoPerguntas() {
                 </div>
             </div>
         </div>`;
+
         questions.push({
             question: "",
             color: "",
@@ -177,9 +178,14 @@ function mostrarTelaCriacaoPerguntas() {
             wrongAnswers: [],
             wrongAnswersImages: [],
         });
+    }
 
+    conteudoMutavel.innerHTML = inicio + meio + fim;
+
+    for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
         if (editando.status) {
             document.querySelector(".loading").innerHTML = loader();
+            console.log(document.querySelector(".loading").innerHTML);
             const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
             promise.then(response => {
                 const allQuestions = document.querySelectorAll(".pergunta");
@@ -200,12 +206,11 @@ function mostrarTelaCriacaoPerguntas() {
                 }
                 if (i === (basicInfos.numberOfQuestions - 1)) {
                     document.querySelector(".loading").innerHTML = "";
+                    console.log(document.querySelector(".loading").innerHTML);
                 }
             });
         }
     }
-
-    conteudoMutavel.innerHTML = inicio + meio + fim;
 
     mostra(document.querySelector(".pergunta ion-icon"));
 }
@@ -248,7 +253,11 @@ function showLevelScreen() {
             imageSrc: "",
             description: "",
         });
+    }
 
+    conteudoMutavel.innerHTML = inicio + meio + fim;
+
+    for (let i = 0; i < basicInfos.numberOfLevels; i++) {
         if (editando.status) {
             document.querySelector(".loading").innerHTML = loader();
             const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
@@ -258,15 +267,13 @@ function showLevelScreen() {
                 allInputsThisLevel[0].value = response.data.levels[i].title;
                 allInputsThisLevel[1].value = response.data.levels[i].minValue;
                 allInputsThisLevel[2].value = response.data.levels[i].image;
-                document.querySelector("textarea").value = response.data.levels[i].text;
+                document.querySelectorAll("textarea")[i].value = response.data.levels[i].text;
                 if (i === (basicInfos.numberOfLevels - 1)) {
                     document.querySelector(".loading").innerHTML = "";
                 }
             });
         }
     }
-
-    conteudoMutavel.innerHTML = inicio + meio + fim;
 
     mostra(document.querySelector(".nivel ion-icon"));
 }
