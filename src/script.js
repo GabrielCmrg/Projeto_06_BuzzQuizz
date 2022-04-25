@@ -219,7 +219,7 @@ function showLevelScreen() {
     window.scrollTo(0,0)
     const inicio = `
     <div class="criacao">
-        <h2>Crie suas perguntas</h2>`;
+        <h2>Agora, decida os níveis</h2>`;
 
     let meio = ``;
 
@@ -297,6 +297,7 @@ function mostra(icone) {
     icone.classList.add("none");
     const pergunta = icone.parentNode.parentNode
     pergunta.querySelector(".wrapper").classList.remove("none");
+    pergunta.scrollIntoView({ behavior: "smooth", block: "start" })
     mostrando = pergunta;
 }
 
@@ -846,7 +847,7 @@ function loader() {
 }
 
 function enviarquizServer() {
-    const obj = createQuizObject();
+    // const obj = createQuizObject();
     let requisicao;
     if (editando.status) {
         requisicao = axios.put(
@@ -867,7 +868,7 @@ function sucessoQuiz(resposta) {
     conteudoMutavel.innerHTML = `
     <div class="sucesso-quiz">
         <h3>
-            Comece pelo começo
+            Seu quizz está pronto!
         </h3>
         <div class="quiz-card">
             <p>

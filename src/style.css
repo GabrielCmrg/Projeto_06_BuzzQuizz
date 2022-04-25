@@ -138,6 +138,7 @@ h2 {
     padding: 27px 17px;
     margin-bottom: 24px;
     transition: 500ms;
+    scroll-margin-top: 100px;
 }
 
 .pergunta ion-icon,
@@ -404,9 +405,6 @@ h6 {
     scroll-margin-top: 100px;
 }
 
-/* .resultado-quizz {
-    scroll-margin-top: 100px;
-} */
 
 .resultado-quizz~.mostrar-voltar {
     margin-bottom: 200px;

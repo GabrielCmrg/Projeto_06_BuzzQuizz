@@ -46,9 +46,14 @@ h2 {
     margin: 38px 0 30px 0;
 }
 
+.sucesso-quiz {
+    width: 100%;
+}
+
 .sucesso-quiz h3 {
     font-size: 20px;
     line-height: 23px;
+    margin-top: 50px;
 }
 
 .sucesso-quiz .quiz-card {
