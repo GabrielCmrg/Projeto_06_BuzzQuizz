@@ -27,10 +27,17 @@
 .criacao,
 .informacoes-basicas-form {
     width: 100%;
+    max-width: 600px;
+}
+
+.informacoes-basicas {
+    width: 100%;
 }
 
 .prosseguir {
     max-width: 324px;
+    white-space: normal;
+    word-wrap: break-word;
     width: 100%;
 }
 
