@@ -112,12 +112,10 @@ header h2 {
 }
 
 .quiz-cards {
-
     display: flex;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
-
 }
 
 .criacao {
@@ -317,6 +315,8 @@ h6 {
     left: 20px;
     right: 20px;
     color: #FFFFFF;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .mostrar-voltar {
@@ -374,7 +374,7 @@ h6 {
 
 .header-quizz {
     width: 100%;
-    height: 227px;
+    padding: 84px 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -388,6 +388,8 @@ h6 {
     font-size: 39px;
     color: #FFFFFF;
     word-break: break-all;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .question-quizz,
@@ -418,7 +420,7 @@ h6 {
 .header-question,
 .resultado-title {
     width: 100%;
-    height: 138px;
+    padding: 58px 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -435,11 +437,11 @@ h6 {
     line-height: 27px;
     color: #FFFFFF;
     mix-blend-mode: difference;
-    word-break: break-all;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .resultado-title p {
-    color: #FFFFFF;
     mix-blend-mode: normal;
 }
 
@@ -472,7 +474,8 @@ h6 {
     font-weight: 700;
     font-size: 20px;
     margin-top: 12px;
-    word-break: break-all;
+    word-break: normal;
+    overflow-wrap: break-word;
     transition: 100ms;
 }
 
@@ -500,7 +503,8 @@ h6 {
     font-size: 19px;
     line-height: 25px;
     color: #484848;
-    word-break: break-all;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .spinner {

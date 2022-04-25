@@ -27,7 +27,6 @@ function mostrarTelaInicial() {
     const quizesDoUsuario = document.querySelector(".quizes-do-usuario");
     getQuizesFromServer();
 
-
     if (usuarioTemQuiz()) {
         mostrarBotaoPequeno(quizesDoUsuario);
         showUserQuizes();
@@ -571,16 +570,20 @@ function getQuizesFromServer() {
     promise.then(response => {
         const quizDosOutros = document.querySelector(".todos-quizes .quiz-cards");
         quizDosOutros.innerHTML = "";
+        const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
+        const userQuizes = JSON.parse(userQuizesSerialized);
+        const userQuizesIds = userQuizes.map(quiz => quiz.id);
         for (let i = 0; i < response.data.length; i++) {
-            quizDosOutros.innerHTML += `
-            <div id="${response.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
-                <p>${response.data[i].title}</p>
-            </div>
-            `;
-
-            // put the background image
-            const currentCard = quizDosOutros.querySelectorAll(".quiz-card")[i];
-            currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`;
+            if (!userQuizesIds.includes(response.data[i].id)) {
+                quizDosOutros.innerHTML += `
+                <div id="${response.data[i].id}" class="quiz-card" onclick="showQuiz(this.id)">
+                    <p>${response.data[i].title}</p>
+                </div>
+                `;
+                // put the background image
+                const currentCard = document.getElementById(response.data[i].id);
+                currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`;
+            }
         }
     });
 }
