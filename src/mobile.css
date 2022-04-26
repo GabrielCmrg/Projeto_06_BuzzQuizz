@@ -63,8 +63,9 @@ h2 {
 }
 
 .sucesso-quiz .quiz-card {
+    max-width: 500px;
     width: 90%;
-    height: 180px;
+    margin-right: 0px;
 }
 
 .header-quizz {

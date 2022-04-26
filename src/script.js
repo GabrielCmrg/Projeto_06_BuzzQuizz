@@ -97,6 +97,7 @@ function mostrarTelaCriacaoQuiz() {
     </div>
     <div class="loading"></div>
     `;
+    enterKeyboard(document.querySelector(".informacoes-basicas"), prosseguirParaPerguntas)
 
     if (editando.status) {
         document.querySelector(".loading").innerHTML = loader();
@@ -183,6 +184,7 @@ function mostrarTelaCriacaoPerguntas() {
     }
 
     conteudoMutavel.innerHTML = inicio + meio + fim;
+    enterKeyboard(document.querySelector(".criacao"), prosseguirParaNiveis)
 
     for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
         if (editando.status) {
@@ -258,6 +260,7 @@ function showLevelScreen() {
     }
 
     conteudoMutavel.innerHTML = inicio + meio + fim;
+    enterKeyboard(document.querySelector(".criacao"), prosseguirParaSucesso)
 
     for (let i = 0; i < basicInfos.numberOfLevels; i++) {
         if (editando.status) {
@@ -558,7 +561,12 @@ function prosseguirParaPerguntas() {
     const inputs = document.querySelectorAll(".informacoes-basicas-form input")
     let haCampoIncorreto = []
     for (let i = 0; i < incorretos.length; i++) {
-        if (!incorretos[i].classList.contains("none") || inputs[i].value === "") {
+        if (!incorretos[i].classList.contains("none")) {
+            haCampoIncorreto.push("mais um");
+        }
+    }
+    for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].value === "") {
             haCampoIncorreto.push("mais um");
         }
     }
@@ -947,6 +955,14 @@ function createQuizObject() {
     }
 
     return objectToSend;
+}
+
+function enterKeyboard(classs, functioon) {
+    classs.addEventListener('keydown', function(event) {
+        if (event.key === "Enter") {
+            functioon();
+        }
+    })
 }
 
 const conteudoMutavel = document.querySelector(".container");

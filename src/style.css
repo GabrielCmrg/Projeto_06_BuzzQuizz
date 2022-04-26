@@ -112,7 +112,7 @@ header h2 {
 
 .quiz-cards {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
 }
@@ -269,6 +269,7 @@ h6 {
     word-break: break-all;
     border-radius: 5px;
     margin-top: 15px;
+    margin-right: 10px;
     position: relative;
     cursor: pointer;
     transition: 500ms;
@@ -388,6 +389,8 @@ h6 {
 .sucesso-quiz .quiz-card {
     width: 500px;
     height: 266px;
+    aspect-ratio: 1/0.53;
+    cursor: initial;
 }
 
 .sucesso-quiz .quiz-card:hover {
