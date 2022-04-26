@@ -291,20 +291,40 @@ h6 {
 .edit-button {
     height: 44px;
     display: flex;
-    justify-content: center;
+    overflow: hidden;
+    word-break: keep-all;
+    justify-content: flex-start;
     align-items: center;
+}
+
+.edit-button ion-icon {
+    margin: 0 11px
+}
+
+.edit-button div {
+    display: flex;
 }
 
 .trash-button {
     height: 44px;
     display: flex;
-    justify-content: center;
+    overflow: hidden;
+    word-break: keep-all;
+    justify-content: flex-start;
     align-items: center;
     transition: 150ms step-start;
 }
 
+.trash-button ion-icon {
+    margin: 0 11px;
+}
+
+.trash-button div {
+    display: flex;
+}
+
 .buttons:hover {
-    width: 80px;
+    width: 130px;
 }
 
 .buttons .trash-button:hover {

@@ -625,10 +625,10 @@ function showUserQuizes() {
                 <p>${response.data.title}</p>
                 <div class="buttons">
                     <div class="edit-button" title="Editar Quizz" onclick="event.stopPropagation(); editQuiz(${response.data.id})">
-                        <ion-icon name="create-outline"></ion-icon>
+                        <div><ion-icon name="create-outline"></ion-icon><span>Editar</span></div>
                     </div>
                     <div class="trash-button" title="Apagar Quizz" onclick="event.stopPropagation(); deleteQuiz(${response.data.id})">
-                        <ion-icon name="trash-outline"></ion-icon>
+                        <div><ion-icon name="trash-outline"></ion-icon><span>Apagar</span></div>
                     </div>
                 </div>
             </div>
