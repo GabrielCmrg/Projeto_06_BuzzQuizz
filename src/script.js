@@ -53,7 +53,28 @@ function mostrarBotaoPequeno(quizesDoUsuario) {
 }
 
 function mostrarTelaCriacaoQuiz() {
-    conteudoMutavel.innerHTML = `
+
+    if (editando.status) {
+        conteudoMutavel.innerHTML = loader();
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
+        promise.then(response => {
+            conteudoMutavel.innerHTML = htmlTelaCriacaoQuiz();
+            const allInputs = document.querySelectorAll("input[type='text']");
+            allInputs[0].value = response.data.title;
+            allInputs[1].value = response.data.image;
+            allInputs[2].value = response.data.questions.length;
+            allInputs[3].value = response.data.levels.length;
+            enterKeyboard(document.querySelector(".informacoes-basicas"), prosseguirParaPerguntas)
+        });
+    } else {
+        conteudoMutavel.innerHTML = htmlTelaCriacaoQuiz();
+        enterKeyboard(document.querySelector(".informacoes-basicas"), prosseguirParaPerguntas)
+
+    }
+}
+
+function htmlTelaCriacaoQuiz() {
+    return `
     <div class="informacoes-basicas">
         <h3>Comece pelo começo</h3>
         <div class="informacoes-basicas-form">
@@ -95,25 +116,60 @@ function mostrarTelaCriacaoQuiz() {
         <input type="button" value="Prosseguir pra criar perguntas" class="prosseguir"
         onclick="prosseguirParaPerguntas()" />
     </div>
-    <div class="loading"></div>
-    `;
-    enterKeyboard(document.querySelector(".informacoes-basicas"), prosseguirParaPerguntas)
+    `
+}
+
+function mostrarTelaCriacaoPerguntas() {
+    for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
+        questions.push({
+            question: "",
+            color: "",
+            correctAnswer: "",
+            correctAnswerImage: "",
+            wrongAnswers: [],
+            wrongAnswersImages: [],
+        });
+    }
+    conteudoMutavel.innerHTML = htmlTelaCriacaoPerguntas();
+    mostra(document.querySelector(".pergunta ion-icon"));
+    enterKeyboard(document.querySelector(".criacao"), prosseguirParaNiveis)
 
     if (editando.status) {
-        document.querySelector(".loading").innerHTML = loader();
+        conteudoMutavel.innerHTML = loader();
         const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
         promise.then(response => {
-            const allInputs = document.querySelectorAll("input[type='text']");
-            allInputs[0].value = response.data.title;
-            allInputs[1].value = response.data.image;
-            allInputs[2].value = response.data.questions.length;
-            allInputs[3].value = response.data.levels.length;
-            document.querySelector(".loading").innerHTML = "";
+            conteudoMutavel.innerHTML = htmlTelaCriacaoPerguntas();
+            enterKeyboard(document.querySelector(".criacao"), prosseguirParaNiveis)
+            for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
+                const allQuestions = document.querySelectorAll(".pergunta");
+                const allInputsThisQuestion = allQuestions[i].querySelectorAll("input[type='text']");
+                if (response.data.questions[i] === undefined) {
+                    mostra(document.querySelector(".pergunta ion-icon"));
+                } else {
+                    allInputsThisQuestion[0].value = response.data.questions[i].title;
+                    allInputsThisQuestion[1].value = response.data.questions[i].color;
+                    const answers = response.data.questions[i].answers;
+                    let count = 0;
+                    for (let j = 0; j < answers.length; j++) {
+                        if (answers[j].isCorrectAnswer) {
+                            allInputsThisQuestion[2].value = answers[j].text;
+                            allInputsThisQuestion[3].value = answers[j].image;
+                        } else {
+                            allInputsThisQuestion[4 + count].value = answers[j].text;
+                            allInputsThisQuestion[5 + count].value = answers[j].image;
+                            count++;
+                        }
+                        if (i === (basicInfos.numberOfQuestions - 1)) {
+                            mostra(document.querySelector(".pergunta ion-icon"));
+                        }
+                    }
+                }
+            }
         });
     }
 }
 
-function mostrarTelaCriacaoPerguntas() {
+function htmlTelaCriacaoPerguntas() {
     const inicio = `
     <div class="criacao">
         <h2>Crie suas perguntas</h2>`;
@@ -122,8 +178,7 @@ function mostrarTelaCriacaoPerguntas() {
 
     const fim = `
         <input type="button" value="Prosseguir pra criar níveis" class="prosseguir" onclick="prosseguirParaNiveis()" />
-    </div>
-    <div class="loading"></div>`;
+    </div>`;
 
     for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
         meio += `
@@ -173,54 +228,64 @@ function mostrarTelaCriacaoPerguntas() {
             </div>
         </div>`;
 
-        questions.push({
-            question: "",
-            color: "",
-            correctAnswer: "",
-            correctAnswerImage: "",
-            wrongAnswers: [],
-            wrongAnswersImages: [],
-        });
+
     }
-
-    conteudoMutavel.innerHTML = inicio + meio + fim;
-    enterKeyboard(document.querySelector(".criacao"), prosseguirParaNiveis)
-
-    for (let i = 0; i < basicInfos.numberOfQuestions; i++) {
-        if (editando.status) {
-            document.querySelector(".loading").innerHTML = loader();
-            console.log(document.querySelector(".loading").innerHTML);
-            const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
-            promise.then(response => {
-                const allQuestions = document.querySelectorAll(".pergunta");
-                const allInputsThisQuestion = allQuestions[i].querySelectorAll("input[type='text']");
-                allInputsThisQuestion[0].value = response.data.questions[i].title;
-                allInputsThisQuestion[1].value = response.data.questions[i].color;
-                const answers = response.data.questions[i].answers;
-                let count = 0;
-                for (let j = 0; j < answers.length; j++) {
-                    if (answers[j].isCorrectAnswer) {
-                        allInputsThisQuestion[2].value = answers[j].text;
-                        allInputsThisQuestion[3].value = answers[j].image;
-                    } else {
-                        allInputsThisQuestion[4 + count].value = answers[j].text;
-                        allInputsThisQuestion[5 + count].value = answers[j].image;
-                        count++;
-                    }
-                }
-                if (i === (basicInfos.numberOfQuestions - 1)) {
-                    document.querySelector(".loading").innerHTML = "";
-                    console.log(document.querySelector(".loading").innerHTML);
-                }
-            });
-        }
-    }
-
-    mostra(document.querySelector(".pergunta ion-icon"));
+    return inicio + meio + fim;
 }
 
 function showLevelScreen() {
-    window.scrollTo(0,0)
+    for (let i = 0; i < basicInfos.numberOfLevels; i++) {
+        levels.push({
+            title: "",
+            percentage: "",
+            imageSrc: "",
+            description: "",
+        });
+    }
+    window.scrollTo(0, 0)
+    conteudoMutavel.innerHTML = htmlLevelQuiz();
+    mostra(document.querySelector(".nivel ion-icon"));
+    enterKeyboard(document.querySelector(".criacao"), prosseguirParaSucesso)
+
+    if (editando.status) {
+        conteudoMutavel.innerHTML = loader();
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
+        promise.then(response => {
+            conteudoMutavel.innerHTML = htmlLevelQuiz();
+            enterKeyboard(document.querySelector(".criacao"), prosseguirParaSucesso)
+            for (let i = 0; i < basicInfos.numberOfLevels; i++) {
+                const allLevels = document.querySelectorAll(".nivel");
+                const allInputsThisLevel = allLevels[i].querySelectorAll("input[type='text']");
+                if (response.data.levels[i] === undefined) {
+                    mostra(document.querySelector(".nivel ion-icon"));
+
+                } else {
+                    allInputsThisLevel[0].value = response.data.levels[i].title;
+                    allInputsThisLevel[1].value = response.data.levels[i].minValue;
+                    allInputsThisLevel[2].value = response.data.levels[i].image;
+                    document.querySelectorAll("textarea")[i].value = response.data.levels[i].text;
+                    if (i === (basicInfos.numberOfLevels - 1)) {
+                        mostra(document.querySelector(".nivel ion-icon"));
+                    }
+                }
+            };
+        });
+    }
+}
+
+function checkPercentage(input) {
+    const number = parseInt(input.value);
+    input.value = number;
+    if (number < 0 || number > 100 || isNaN(number)) {
+        input.parentNode.querySelector(".percentage").classList.remove("none");
+        input.classList.add("background-error");
+    } else {
+        input.parentNode.querySelector(".percentage").classList.add("none");
+        input.classList.remove("background-error");
+    }
+}
+
+function htmlLevelQuiz() {
     const inicio = `
     <div class="criacao">
         <h2>Agora, decida os níveis</h2>`;
@@ -251,48 +316,9 @@ function showLevelScreen() {
                 </div>
             </div>
         </div>`;
-        levels.push({
-            title: "",
-            percentage: "",
-            imageSrc: "",
-            description: "",
-        });
+
     }
-
-    conteudoMutavel.innerHTML = inicio + meio + fim;
-    enterKeyboard(document.querySelector(".criacao"), prosseguirParaSucesso)
-
-    for (let i = 0; i < basicInfos.numberOfLevels; i++) {
-        if (editando.status) {
-            document.querySelector(".loading").innerHTML = loader();
-            const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`);
-            promise.then(response => {
-                const allLevels = document.querySelectorAll(".nivel");
-                const allInputsThisLevel = allLevels[i].querySelectorAll("input[type='text']");
-                allInputsThisLevel[0].value = response.data.levels[i].title;
-                allInputsThisLevel[1].value = response.data.levels[i].minValue;
-                allInputsThisLevel[2].value = response.data.levels[i].image;
-                document.querySelectorAll("textarea")[i].value = response.data.levels[i].text;
-                if (i === (basicInfos.numberOfLevels - 1)) {
-                    document.querySelector(".loading").innerHTML = "";
-                }
-            });
-        }
-    }
-
-    mostra(document.querySelector(".nivel ion-icon"));
-}
-
-function checkPercentage(input) {
-    const number = parseInt(input.value);
-    input.value = number;
-    if (number < 0 || number > 100 || isNaN(number)) {
-        input.parentNode.querySelector(".percentage").classList.remove("none");
-        input.classList.add("background-error");
-    } else {
-        input.parentNode.querySelector(".percentage").classList.add("none");
-        input.classList.remove("background-error");
-    }
+    return inicio + meio + fim;
 }
 
 function mostra(icone) {
@@ -616,13 +642,13 @@ function getQuizesFromServer() {
                 currentCard.style.backgroundImage = `${backgroundGradient}, url("${response.data[i].image}")`;
             }
         }
-        
+
     });
 }
 
 function showUserQuizes() {
     const userQuizesSerialized = localStorage.getItem(LOCAL_STORAGE_NAME);
-    const userQuizes= JSON.parse(userQuizesSerialized);
+    const userQuizes = JSON.parse(userQuizesSerialized);
     for (let i = 0; i < userQuizes.length; i++) {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${userQuizes[i].id}`);
         promise.then(response => {
@@ -698,7 +724,7 @@ function showQuiz(serverId) {
     }
     promise.then(response => {
         dadosdoquizz = response.data
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
         setTimeout(scrollToFirstQuestion, 750)
         conteudoMutavel.innerHTML = `
         <div class="quizz">
@@ -830,7 +856,7 @@ function scrollToNextQuestion() {
     }
 }
 function smooth() {
-    window.scrollTo({top: 0, left: 0, behavior: "smooth"});
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     setTimeout(voltarQuizz, 750);
 }
 function voltarQuizz() {
@@ -861,10 +887,10 @@ function enviarquizServer() {
     let requisicao;
     if (editando.status) {
         requisicao = axios.put(
-            `https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`, 
-            obj, 
-            {headers: {"Secret-Key": editando.key}}
-            );
+            `https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${editando.id}`,
+            obj,
+            { headers: { "Secret-Key": editando.key } }
+        );
     } else {
         requisicao = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", obj);
     }
@@ -908,7 +934,7 @@ function localStorageUpdate(quizId, quizKey) {
             return;
         }
     }
-    myQuizList.push({id: quizId, key: quizKey});
+    myQuizList.push({ id: quizId, key: quizKey });
     localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(myQuizList));
 }
 
@@ -958,7 +984,7 @@ function createQuizObject() {
 }
 
 function enterKeyboard(classs, functioon) {
-    classs.addEventListener('keydown', function(event) {
+    classs.addEventListener('keydown', function (event) {
         if (event.key === "Enter") {
             functioon();
         }
@@ -976,6 +1002,6 @@ let questoesMarcadas = [];
 let questoesDoQuizz = 0;
 let dadosdoquizz = [];
 let loadNaofunciona = 0;
-const editando = {status: false, id: "", key: ""};
+const editando = { status: false, id: "", key: "" };
 const backgroundGradient = "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%)";
 mostrarTelaInicial();
