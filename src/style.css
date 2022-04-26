@@ -319,12 +319,6 @@ h6 {
     border-radius: 10px 0 0 0;
 }
 
-
-
-/* .buttons .trash-button ion-icons:hover {
-    background-color: #EC362D;
-} */
-
 .quiz-card:hover {
     transform: translateY(-10px);
 }

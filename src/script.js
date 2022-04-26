@@ -13,6 +13,8 @@ function usuarioTemQuiz() {
 
 function mostrarTelaInicial() {
     window.scrollTo(0, 0);
+    qtdAcertos = 0;
+    questoesMarcadas = [];
     questions.length = 0;
     levels.length = 0;
     editando.status = false;
@@ -954,7 +956,7 @@ const questions = [];
 const levels = [];
 const LOCAL_STORAGE_NAME = "userQuizes";
 let qtdAcertos = 0;
-let questoesMarcadas = []
+let questoesMarcadas = [];
 let questoesDoQuizz = 0;
 let dadosdoquizz = [];
 let loadNaofunciona = 0;
